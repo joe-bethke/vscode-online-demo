@@ -1,0 +1,4 @@
+{
+    "postCreateCommand": "/bin/bash ./.devcontainer/post-create.sh > ~/post-create.log",
+    "postAttachCommand": "/bin/bash ./.devcontainer/post-attach.sh > ~/post-attach.log"
+}
