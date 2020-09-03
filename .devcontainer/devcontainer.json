@@ -5,7 +5,7 @@
         "AzureAppConfigName": "crsliot-appconfig-dev",
         "AzureAksName": "crsliot-aks-dev",
     },
-    "postCreateCommand": "/bin/bash ./.devcontainer/post-create.sh > ~/post-create.log",
+    "postCreateCommand": "/bin/bash ./.devcontainer/post-create.sh ${localEnv:AzureUsername} ${localEnv:AzurePassword} > ~/post-create.log",
     "postAttachCommand": "/bin/bash ./.devcontainer/post-attach.sh > ~/post-attach.log",
     "postStartCommand": "/bin/bash ./.devcontainer/post-attach.sh > ~/post-start.log"
 }
