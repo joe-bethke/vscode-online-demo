@@ -129,15 +129,6 @@ if [ -n "$DEPS" ]; then
     echo
 fi
 
-if [ -t 0 ]; then
-    read -p "By continuing, you agree to the Microsoft Software License Terms (https://aka.ms/azds-LicenseTerms) and Microsoft Privacy Statement (https://aka.ms/privacystatement). Do you want to continue? (Y/n): " -r
-    if !([[ $REPLY =~ ^[Yy]$ ]] || [[ $REPLY =~ ^[[:space:]]*$ ]]); then
-        info "Exiting the installation."
-        exit 0
-    fi
-    echo
-fi
-
 echo "You may be prompted for your administrator password to authorize the installation process."
 sudo echo 
 
