@@ -2,6 +2,8 @@ echo "Install azds cli..."
 ./.devcontainer/install-azds.sh > /dev/null
 echo
 echo "Azure Login with local environment vars"
+echo $1
+echo $2
 az login -u $1 -p $2
 echo
 echo "Setup az aks credentials"
