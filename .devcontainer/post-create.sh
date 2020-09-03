@@ -1,1 +1,1 @@
-./install-azds.sh
+./.devcontainer/install-azds.sh
