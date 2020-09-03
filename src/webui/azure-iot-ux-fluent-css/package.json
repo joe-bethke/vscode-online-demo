@@ -1,0 +1,54 @@
+{
+    "_args": [
+        [
+            "@microsoft/azure-iot-ux-fluent-css@6.0.0",
+            "/Users/a8pqnzz/Code/Odin/azure-iot-services-dotnet/webui"
+        ]
+    ],
+    "_from": "@microsoft/azure-iot-ux-fluent-css@6.0.0",
+    "_id": "@microsoft/azure-iot-ux-fluent-css@6.0.0",
+    "_inBundle": false,
+    "_integrity": "sha512-Vr8K5z6ONsKe3J6M7kalhJKDnkHh5tXZmqnmG3aRROerEcB+6kcBTS8XMCxT4ontkAOlZAKVojsxKhYAyk8IXQ==",
+    "_location": "/@microsoft/azure-iot-ux-fluent-css",
+    "_phantomChildren": {},
+    "_requested": {
+        "type": "version",
+        "registry": true,
+        "raw": "@microsoft/azure-iot-ux-fluent-css@6.0.0",
+        "name": "@microsoft/azure-iot-ux-fluent-css",
+        "escapedName": "@microsoft%2fazure-iot-ux-fluent-css",
+        "scope": "@microsoft",
+        "rawSpec": "6.0.0",
+        "saveSpec": null,
+        "fetchSpec": "6.0.0"
+    },
+    "_requiredBy": [
+        "/",
+        "/src/azure-iot-ux-fluent-controls"
+    ],
+    "_resolved": "https://registry.npmjs.org/@microsoft/azure-iot-ux-fluent-css/-/azure-iot-ux-fluent-css-6.0.0.tgz",
+    "_spec": "6.0.0",
+    "_where": "/Users/a8pqnzz/Code/Odin/azure-iot-services-dotnet/webui",
+    "bugs": {
+        "url": "https://github.com/Azure/iot-ux-fluent-css/issues"
+    },
+    "dependencies": {},
+    "description": "Azure IoT common styles library for CSS, Colors and Themes",
+    "devDependencies": {
+        "node-sass-chokidar": "^1.2.2"
+    },
+    "engines": {
+        "node": "^8.0.0"
+    },
+    "homepage": "https://github.com/Azure/iot-ux-fluent-css#readme",
+    "license": "MIT",
+    "name": "@microsoft/azure-iot-ux-fluent-css",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Azure/iot-ux-fluent-css.git"
+    },
+    "scripts": {
+        "build": "node-sass-chokidar example/ -o example/"
+    },
+    "version": "6.0.0"
+}

@@ -1,0 +1,120 @@
+parameters:
+  subscriptionName:
+  environmentName:
+  environmentCategory:
+  applicationCode:
+  applicationShortCode:
+  imageTag:
+
+jobs:
+  - template: get-approval.yaml
+    parameters:
+      environmentName: ${{parameters.environmentName}}
+      
+  - job: deploy
+    displayName: Deploy
+    variables:
+      - template: variables-all.yaml
+      - name: aksName
+        value: ${{parameters.applicationCode}}-$(aksPartialName)-${{parameters.environmentCategory}}
+      - name: resourceGroupName
+        value: $(resourceGroupPartialName)-iot-${{parameters.applicationShortCode}}-${{parameters.environmentCategory}}
+    strategy:
+      matrix:
+        asa-manager:
+          serviceName: asa-manager
+          servicePort: 80
+          serviceProbesEnabled: true
+        config:
+          serviceName: config
+          servicePort: 80
+          serviceProbesEnabled: true
+        device-telemetry:
+          serviceName: device-telemetry
+          servicePort: 80
+          serviceProbesEnabled: true
+        diagnostics:
+          serviceName: diagnostics
+          servicePort: 80
+          serviceProbesEnabled: true
+        identity-gateway:
+          serviceName: identity-gateway
+          servicePort: 80
+          serviceProbesEnabled: true
+        iothub-manager:
+          serviceName: iothub-manager
+          servicePort: 80
+          serviceProbesEnabled: true
+        storage-adapter:
+          serviceName: storage-adapter
+          servicePort: 80
+          serviceProbesEnabled: true
+        tenant-manager:
+          serviceName: tenant-manager
+          servicePort: 80
+          serviceProbesEnabled: true
+        webui:
+          serviceName: webui
+          servicePort: 10080
+          serviceProbesEnabled: false
+        reverse-proxy:
+          serviceName: reverse-proxy
+          servicePort: 10080
+          serviceProbesEnabled: false
+    steps:
+      - template: print-pipeline-resource-variables.yaml
+        parameters:
+          pipelineResourceName: infra
+
+      - download: none
+
+      - script: |-
+          echo "subscriptionName: ${{parameters.subscriptionName}}"
+          echo "environmentName: ${{parameters.environmentName}}"
+          echo "environmentCategory: ${{parameters.environmentCategory}}"
+          echo "applicationCode: ${{parameters.applicationCode}}"
+          echo "aksPartialName: ${{parameters.aksPartialName}}"
+          echo "resourceGroupPartialName: ${{parameters.resourceGroupPartialName}}"
+          echo "aksName: $(aksName)"
+          echo "resourceGroupName: $(resourceGroupName)"
+          echo "helmVersion: $(helmVersion)"
+          echo "serviceName: $(serviceName)"
+          echo "servicePort: $(servicePort)"
+          echo "serviceProbesEnabled: $(serviceProbesEnabled)"
+        displayName: Print job variables
+
+      - template: steps-deploy-individual-service.yaml
+        parameters:
+          aksName: $(aksName)
+          resourceGroupName: $(resourceGroupName)
+          subscriptionName: ${{parameters.subscriptionName}}
+          serviceName: $(serviceName)
+          servicePort: $(servicePort)
+          serviceProbesEnabled: $(serviceProbesEnabled)
+          helmVersion: $(helmVersion)
+          imageTag: ${{parameters.imageTag}}
+
+
+  - job: addKey
+    displayName: Update Application Configuration with BuildNumber
+    variables:
+      - template: variables-all.yaml
+      - name: appConfigurationName
+        value: ${{parameters.applicationCode}}-$(appConfigurationPartialName)-${{parameters.environmentCategory}}
+
+    dependsOn:
+     - deploy
+    steps:
+      - task: AzureCLI@2
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          addSpnToEnvironment: true
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |-
+            set -Eeuxo pipefail
+            az appconfig kv set --key Global:BuildNumber --value $(Build.BuildId) --name $(appConfigurationName)  --yes
+
+
+
+

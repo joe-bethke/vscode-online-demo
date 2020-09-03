@@ -1,0 +1,227 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "functionAppName": {
+            "type": "string",
+            "minLength": 3,
+            "metadata": {
+                "description": "Name of the function app"
+            }
+        },
+        "skuName": {
+            "type": "string",
+            "defaultValue": "Y1",
+            "allowedValues": [
+                "D1",
+                "B1",
+                "B2",
+                "B3",
+                "S1",
+                "S2",
+                "S3",
+                "P1",
+                "P2",
+                "P3",
+                "P4",
+                "P1v2",
+                "P2v2",
+                "p3v2",
+                "Y1"
+            ],
+            "metadata": {
+                "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+            }
+        },
+        "skuCapacity": {
+            "type": "int",
+            "defaultValue": 1,
+            "minValue": 1,
+            "metadata": {
+                "description": "Describes plan's instance count"
+            }
+        },
+        "skuTier": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Free",
+                "Shared",
+                "Basic",
+                "Standard",
+                "Premium"
+            ],
+            "metadata": {
+                "description": "the pricing tier"
+            }
+        },
+        "appInsightsName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Application Insight"
+            }
+        },
+        "appInsightsLocation": {
+            "minLength": 2,
+            "type": "string",
+            "metadata": {
+                "description": "AppInsight resource location"
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the exiting Storage Account to store function logs"
+            }
+        },
+        "runtime": {
+            "type": "string",
+            "defaultValue": "node",
+            "allowedValues": [
+                "node",
+                "dotnet",
+                "java"
+            ],
+            "metadata": {
+                "description": "The language worker runtime to load in the function app."
+            }
+        },
+        "funcVersion": {
+            "type": "string",
+            "defaultValue": "~2",
+            "metadata": {
+                "description": "Version of the function app. v1 or v2"
+            }
+        },
+        "codedeployPackageUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "link to the zip file uploaded to blob, url needs to contain SAS url"
+            }
+        },
+        "nodeVersion": {
+            "type": "string",
+            "defaultValue": "10.14.1",
+            "metadata": {
+                "description": "Website Node Default Version e.g. 10.14.1"
+            }
+        }
+    },
+    "variables": {
+        "apiVersion": "2016-02-03",
+        "location": "[resourceGroup().location]",
+        "storageVersion": "2016-01-01"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "name": "[parameters('functionAppName')]",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2016-09-01",
+            "sku": {
+                "name": "[parameters('skuName')]",
+                "tier": "[parameters('skuTier')]",
+                "capacity": "[parameters('skuCapacity')]"
+            },
+            "dependsOn": [],
+            "tags": {
+                "displayName": "Consumption Plan"
+            },
+            "properties": {
+                "name": "[parameters('functionAppName')]",
+                "numberOfWorkers": 1
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "name": "[parameters('functionAppName')]",
+            "apiVersion": "2016-08-01",
+            "location": "[variables('location')]",
+            "scale": null,
+            "properties": {
+                "enabled": true,
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('functionAppName'))]",
+                "reserved": false,
+                "scmSiteAlsoStopped": false,
+                "hostingEnvironmentProfile": null,
+                "clientAffinityEnabled": false,
+                "clientCertEnabled": false,
+                "hostNamesDisabled": false,
+                "containerSize": 1536,
+                "dailyMemoryTimeQuota": 0,
+                "cloningInfo": null,
+                "phpVersion": "",
+                "use32BitWorkerProcess": true,
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2015-05-01-preview').key1,';')]"
+                        },
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2015-05-01-preview').key1,';')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "[parameters('funcVersion')]"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "[parameters('runtime')]"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "[parameters('nodeVersion')]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('microsoft.insights/components/', parameters('appInsightsName')), '2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[toLower(parameters('functionAppName'))]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2015-05-01-preview').key1,';')]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('functionAppName'))]",
+                "[resourceId('Microsoft.Insights/components', parameters('appInsightsName'))]"
+            ],
+            "resources": []
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "name": "[parameters('appInsightsName')]",
+            "location": "[parameters('appInsightsLocation')]",
+            "apiVersion": "2014-04-01",
+            "dependsOn": [],
+            "tags": {
+                "displayName": "[parameters('appInsightsName')]"
+            },
+            "properties": {
+                "applicationId": "[parameters('appInsightsName')]"
+            }
+        }
+    ],
+    "outputs": {
+        "CloudResourceName": {
+            "value": "[parameters('functionAppName')]",
+            "type": "string"
+        },
+        "CloudResourceUri": {
+            "value": "",
+            "type": "string"
+        },
+        "CloudResourceType": {
+            "value": "Azure function",
+            "type": "string"
+        }
+    }
+}

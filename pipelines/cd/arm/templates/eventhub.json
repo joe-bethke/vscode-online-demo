@@ -1,0 +1,317 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of EventHub namespace"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources"
+            }
+        },
+        "eventhubSku": {
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Basic",
+                "Standard"
+            ],
+            "type": "string",
+            "metadata": {
+                "description": "The messaging tier for service Bus namespace"
+            }
+        },
+        "skuCapacity": {
+            "type": "int",
+            "allowedValues": [
+                1,
+                2,
+                4
+            ],
+            "defaultValue": 1,
+            "metadata": {
+                "description": "MessagingUnits for premium namespace"
+            }
+        },
+        "throughputUnits": {
+            "type": "int",
+            "defaultValue": 3,
+            "metadata": {
+                "description": "Maximum Throughput Units"
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the exiting Storage Account to archieve captures"
+            }
+        },
+        "blobContainerName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the existing storage container that you want the blobs archived in"
+            }
+        },
+        "captureTime": {
+            "type": "int",
+            "defaultValue": 300,
+            "minValue": 60,
+            "maxValue": 900,
+            "metadata": {
+                "description": "the time window in seconds for the archival"
+            }
+        },
+        "captureSize": {
+            "type": "int",
+            "defaultValue": 314572800,
+            "minValue": 10485760,
+            "maxValue": 524288000,
+            "metadata": {
+                "description": "the size window in bytes for evetn hub capture"
+            }
+        },
+        "subscriptionId": {
+            "type": "string",
+            "defaultValue": "403f2258-d6b0-4c0a-b565-4102510935aa",
+            "metadata": {
+                "description": "Subscription Id where storage account exists"
+            }
+        },
+        "resourceGroup": {
+            "type": "string",
+            "defaultValue": "rg-crsliot-dev",
+            "metadata": {
+                "description": "Resource group name where storage account exists"
+            }
+        }
+    },
+    "variables": {
+        "namespaceName": "[parameters('namespaceName')]",
+        "ehVersion": "2017-04-01",
+        "ehAuthorization": "iothubroutes",
+        "actionsAuthorization": "actionroutes",
+        "storageAccountName": "[concat('/subscriptions/',parameters('subscriptionId'),'/resourceGroups/',parameters('resourceGroup'),'/providers/Microsoft.Storage/storageAccounts/',parameters('storageAccountName'))]",
+        "defaultSASKeyName": "RootManageSharedAccessKey",
+        "authRuleResourceId": "[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('namespaceName'), variables('defaultSASKeyName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.EventHub/namespaces",
+            "name": "[variables('namespaceName')]",
+            "apiVersion": "2017-04-01",
+            "location": "[parameters('location')]",
+            "tags": {
+                "[concat('hidden-related:', resourceId('Microsoft.EventHub/namespaces', variables('namespaceName')))]": "Resource",
+                "displayName": "eventhub"
+            },
+            "sku": {
+                "name": "[parameters('eventhubSku')]",
+                "tier": "[parameters('eventhubSku')]",
+                "capacity": "[parameters('skuCapacity')]"
+            },
+            "properties": {
+                "isAutoInflateEnabled": true,
+                "maximumThroughputUnits": "[parameters('throughputUnits')]",
+                "kafkaEnabled": true
+            },
+            "resources": [
+                {
+                    "type": "eventhubs",
+                    "name": "actions-eventhub",
+                    "apiVersion": "2017-04-01",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "MessageRetentionInDays": 1,
+                        "partitionCount": 2
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Eventhub/namespaces/', variables('namespaceName'))]"
+                    ],
+                    "resources": [
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "[variables('actionsAuthorization')]",
+                            "type": "authorizationRules",
+                            "dependsOn": [
+                                "actions-eventhub"
+                            ],
+                            "properties": {
+                                "Rights": [
+                                    "Send","Listen"
+                                ]
+                            }
+                        },
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "alertingactions",
+                            "type": "consumergroups",
+                            "dependsOn": [
+                                "actions-eventhub"
+                            ],
+                            "properties": {}
+                        }
+                    ]
+                },
+                {
+                    "type": "eventhubs",
+                    "name": "lifecycle",
+                    "apiVersion": "2017-04-01",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "MessageRetentionInDays": 3,
+                        "partitionCount": 2
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Eventhub/namespaces/', variables('namespaceName'))]"
+                    ],
+                    "resources": [
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "[variables('ehAuthorization')]",
+                            "type": "authorizationRules",
+                            "dependsOn": [
+                                "lifecycle"
+                            ],
+                            "properties": {
+                                "Rights": [
+                                    "Send","Listen"
+                                ]
+                            }
+                        },
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "devicestream",
+                            "type": "consumergroups",
+                            "dependsOn": [
+                                "lifecycle"
+                            ],
+                            "properties": {}
+                        },
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "devicepropertiescache",
+                            "type": "consumergroups",
+                            "dependsOn": [
+                                "lifecycle"
+                            ],
+                            "properties": {}
+                        }
+                    ]
+                },
+                {
+                    "type": "eventhubs",
+                    "name": "telemetry",
+                    "apiVersion": "2017-04-01",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "MessageRetentionInDays": 1,
+                        "partitionCount": 2,
+                        "captureDescription": {
+                            "enabled": false,
+                            "encoding": "Avro",
+                            "destination": {
+                                "name": "EventHubArchive.AzureBlockBlob",
+                                "properties": {
+                                    "storageAccountResourceId": "[variables('storageAccountName')]",
+                                    "blobContainer": "[parameters('blobContainerName')]",
+                                    "archiveNameFormat": "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}"
+                                }
+                            },
+                            "intervalInSeconds": "[parameters('captureTime')]",
+                            "sizeLimitInBytes": "[parameters('captureSize')]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Eventhub/namespaces/', variables('namespaceName'))]"
+                    ],
+                    "resources": [
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "[variables('ehAuthorization')]",
+                            "type": "authorizationRules",
+                            "dependsOn": [
+                                "telemetry"
+                            ],
+                            "properties": {
+                                "Rights": [
+                                    "Send","Listen"
+                                ]
+                            }
+                        },
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "devicestream",
+                            "type": "consumergroups",
+                            "dependsOn": [
+                                "telemetry"
+                            ],
+                            "properties": {}
+                        }
+
+                    ]
+                },
+                {
+                    "type": "eventhubs",
+                    "name": "twin-change",
+                    "apiVersion": "2017-04-01",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "MessageRetentionInDays": 3,
+                        "partitionCount": 2
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.Eventhub/namespaces/', variables('namespaceName'))]"
+                    ],
+                    "resources": [
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "[variables('ehAuthorization')]",
+                            "type": "authorizationRules",
+                            "dependsOn": [
+                                "twin-change"
+                            ],
+                            "properties": {
+                                "Rights": [
+                                    "Send","Listen"
+                                ]
+                            }
+                        },
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "devicepropertiescache",
+                            "type": "consumergroups",
+                            "dependsOn": [
+                                "twin-change"
+                            ],
+                            "properties": {}
+                        },
+                        {
+                            "apiVersion": "2017-04-01",
+                            "name": "devicestream",
+                            "type": "consumergroups",
+                            "dependsOn": [
+                                "twin-change"
+                            ],
+                            "properties": {}
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "outputs": {
+        "NamespaceConnectionString": {
+            "type": "string",
+            "value": "[listkeys(variables('authRuleResourceId'), '2017-04-01').primaryConnectionString]"
+        },
+        "SharedAccessPolicyPrimaryKey": {
+            "type": "string",
+            "value": "[listkeys(variables('authRuleResourceId'), '2017-04-01').primaryKey]"
+        }
+    }
+}

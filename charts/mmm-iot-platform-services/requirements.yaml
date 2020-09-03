@@ -1,0 +1,41 @@
+dependencies:
+  - name: mmm-iot-service
+    version: 0.1.0
+    repository: file://../mmm-iot-service
+    alias: asa-manager
+  - name: mmm-iot-service
+    version: 0.1.0
+    repository: file://../mmm-iot-service
+    alias: config
+  - name: mmm-iot-service
+    version: 0.1.0
+    repository: file://../mmm-iot-service
+    alias: device-telemetry
+  - name: mmm-iot-service
+    version: 0.1.0
+    repository: file://../mmm-iot-service
+    alias: diagnostics
+  - name: mmm-iot-service
+    version: 0.1.0
+    repository: file://../mmm-iot-service
+    alias: identity-gateway
+  - name: mmm-iot-service
+    version: 0.1.0
+    repository: file://../mmm-iot-service
+    alias: iothub-manager
+  - name: mmm-iot-service
+    version: 0.1.0
+    repository: file://../mmm-iot-service
+    alias: reverse-proxy
+  - name: mmm-iot-service
+    version: 0.1.0
+    repository: file://../mmm-iot-service
+    alias: storage-adapter
+  - name: mmm-iot-service
+    version: 0.1.0
+    repository: file://../mmm-iot-service
+    alias: tenant-manager
+  - name: mmm-iot-service
+    version: 0.1.0
+    repository: file://../mmm-iot-service/
+    alias: webui

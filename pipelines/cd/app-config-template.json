@@ -1,0 +1,124 @@
+{
+  "Actions": {
+    "ActionsEventHubName": "actions-eventhub",
+    "LogicAppEndpointUrl": "https://prod-26.centralus.logic.azure.com:443/workflows/c0809c2788d14464bf7105f8f4145991/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=PmdxV0RSmEFj7TJRqQJQytGYWX1xF3Gc1P4u2wLf8YM",
+    "SolutionWebsiteUrl": "https://remotemonitering3m.azurewebsites.net",
+    "StorageContainer": "actions-eventhub-container",
+    "TemplateFolder": "./data/"
+  },
+  "ConfigService": {
+    "ConfigServiceActions": {
+      "ArmEndpointUrl": "https://management.azure.com/",
+      "ManagementApiVersion": "2016-06-01",
+      "Office365ConnectionUrl": "https://portal.azure.com/#@facac3c4-e2a5-4257-af76-205c8a821ddb/resource/subscriptions/c36fb2f8-f98d-40d0-90a9-d65e93acb428/resourceGroups/remotemonitering3m/providers/Microsoft.Web/connections/office365-connector/edit",
+      "SolutionName": "remotemonitering3m",
+      "SubscriptionId": "c36fb2f8-f98d-40d0-90a9-d65e93acb428"
+    },
+    "SeedTemplate": "default",
+    "SolutionType": "remotemonitoring"
+  },
+  "DeviceTelemetryService": {
+    "Alarms": {
+      "Database": "iot",
+      "MaxDeleteRetries": "3",
+      "StorageType": "cosmosdb"
+    },
+    "Messages": {
+      "Collection": "messages",
+      "Database": "iot",
+      "MessageRetrievalCountLimit": 1000,
+      "TelemetryStorageType": "cosmosdb"
+    },
+    "RulesTemplatesFolder": "./data/Rules/",
+    "TimeSeries": {
+      "ApiVersion": "2016-12-12",
+      "Audience": "https://api.timeseries.azure.com/",
+      "Authority": "https://login.windows.net/",
+      "ExplorerUrl": "https://insights.timeseries.azure.com/",
+      "Timeout": "PT20S",
+      "TsiDataAccessFqdn": "Undefined"
+    }
+  },
+  "ExternalDependencies": {
+    "AsaManagerServiceUrl": "http://asa-manager:80/v1",
+    "AuthServiceUrl": "http://identity-gateway:80/v1",
+    "ConfigServiceUrl": "http://config:80/v1",
+    "DeviceSimulationServiceUrl": "http://device-simulation:80/v1",
+    "DiagnosticsMaxLogRetries": "3",
+    "DiagnosticsServiceUrl": "http://diagnostics:80/v1",
+    "IdentityGatewayServiceUrl": "http://identity-gateway:80/v1",
+    "IotHubManagerServiceUrl": "http://iothub-manager:80/v1",
+    "StorageAdapterServiceTimeout": "10000",
+    "StorageAdapterServiceUrl": "http://storage-adapter:80/v1",
+    "TelemetryServiceUrl": "http://device-telemetry:80/v1"
+  },
+  "Global": {
+    "AuthRequired": "true",
+    "AzureActiveDirectory": {
+      "AppId": "OVERWRITTEN_IN_DEPLOYMENT",
+      "AppSecret": "OVERWRITTEN_IN_DEPLOYMENT",
+      "TenantId": "facac3c4-e2a5-4257-af76-205c8a821ddb"
+    },
+    "AzureB2cBaseUri": "https://login.microsoftonline.com/crsltestab2c.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_testpolicy&client_id=086c6072-f6fe-449f-887c-e08c598aec0b&nonce=defaultNonce&redirect_uri=https%3A%2F%2Flocalhost%3A44367%2Fconnect%2Fcallback&scope=openid&response_type=id_token&prompt=login&response_mode=form_post",
+    "ClientAuth": {
+      "AuthType": "JWT",
+      "CorsWhitelist": "*",
+      "Jwt": {
+        "AadAppId": "OVERWRITTEN_IN_DEPLOYMENT",
+        "AllowedAlgorithms": "RS256",
+        "Audience": "IoTPlatform",
+        "AuthIssuer": "OVERWRITTEN_IN_DEPLOYMENT",
+        "ClockSkewSeconds": "300"
+      }
+    },
+    "CosmosDb": {
+      "AccountName": "OVERWRITTEN_IN_DEPLOYMENT",
+      "Rus": "400"
+    },
+    "DevelopmentMode": "true",
+    "KeyVault": {
+      "Name": "OVERWRITTEN_IN_DEPLOYMENT"
+    },
+    "Location": "centralus",
+    "PackageSharedAccessExpiryTime": "24:00:00",
+    "ResourceGroup": "OVERWRITTEN_IN_DEPLOYMENT",
+    "FixedSamplingPercentage": 20,
+    "StorageAccount": {
+      "Name": "OVERWRITTEN_IN_DEPLOYMENT"
+    },
+    "StorageAccountConnectionStringKeyVaultSecret": "storageAccountConnectionString",
+    "SubscriptionId": "OVERWRITTEN_IN_DEPLOYMENT"
+  },
+  "IotHubManagerService": {
+    "DevicePropertiesCache": {
+      "RebuildTimeout": "20",
+      "Ttl": "3600",
+      "Whitelist": "tags.*,reported.Protocol,reported.SupportedMethods,reported.FirmwareUpdateStatus"
+    }
+  },
+  "StorageAdapterService": {
+    "DocumentDbRus": "400",
+    "Messages": "iot",
+    "StorageType": "documentDb"
+  },
+  "TenantManagerService": {
+    "AutomationAccountName": "OVERWRITTEN_IN_DEPLOYMENT",
+    "CreateIotHubWebHookName": "CreateIotHub",
+    "CreateSaWebHookName": "createSAJob",
+    "DeleteIotHubWebHookName": "DeleteIotHub",
+    "DeleteSaWebHookName": "deleteSAJob",
+    "EventHubNamespaceName": "OVERWRITTEN_IN_DEPLOYMENT",
+    "LifecycleEventHubConnectionString": "OVERWRITTEN_IN_DEPLOYMENT",
+    "LifecycleFunctionName": "lifecycle-processor",
+    "LifecycleFunctionUri": "OVERWRITTEN_IN_DEPLOYMENT",
+    "SetAppConfigEndpoint": "OVERWRITTEN_IN_DEPLOYMENT",
+    "SetAppConfigFunction": "OVERWRITTEN_IN_DEPLOYMENT",
+    "TableName": "tenant",
+    "TelemetryEventHubConnectionString": "OVERWRITTEN_IN_DEPLOYMENT",
+    "TelemetryFunctionName": "telemetry-processor",
+    "TelemetryFunctionUri": "OVERWRITTEN_IN_DEPLOYMENT",
+    "TwinChangeEventHubConnectionString": "OVERWRITTEN_IN_DEPLOYMENT",
+    "TwinChangeFunctionName": "twin-change-processor",
+    "TwinChangeFunctionUri": "OVERWRITTEN_IN_DEPLOYMENT"
+  }
+}

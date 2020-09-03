@@ -1,0 +1,85 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/themes';
+@import 'src/styles/mixins';
+
+$navItemHeight: 48px;
+$leftNavExpandedWidth: 220px;
+$svgSize: 16px;
+$companySvgSize: 23px;
+
+.nav-item {
+  display: flex;
+  flex-flow: row nowrap;
+  flex-shrink: 0;
+  align-items: center;
+  text-decoration: none;
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+
+  @include rem-fallback(height, $navItemHeight); 
+
+  .nav-item-icon {
+    img {
+      max-height: 23px;
+      vertical-align: middle;
+      @include rem-fallback(margin, 10px);
+    }
+  }
+
+  .nav-item-text { text-transform: capitalize; }
+
+  @include themify($themes) {
+    .nav-item-icon svg { fill: themed('colorNavText'); }
+  }
+}
+
+span[class*='Masthead_masthead-branding']{
+
+  .nav-item-icon {
+    margin-Bottom: 3px;
+  }
+
+  .nav-item-icon svg {
+    height: 23px;
+    width: auto;
+    @include rem-fallback(margin, 10px);
+    margin-Bottom:6px;
+  }
+}
+
+.app {
+  height: 100%;
+  width: 100%;
+  display: flex;
+
+  // Apply theme properties
+  @include themify($themes) {
+    color: themed('colorContentText');
+    background-color: themed('colorContentBackground');
+
+    // Style text highlights
+    // Set RGBa opacity to .99 to get correct color in the selection styling
+    ::selection {
+      color: themed('colorSelectionText');
+      background: rgba(themed('colorSelectionBg'), .99);
+    }
+
+    ::-moz-selection {
+      color: themed('colorSelectionText');
+      background: rgba(themed('colorSelectionBg'), .99);
+    }
+
+  }
+}
+
+.access-denied {
+  height: 100%;
+  font-family: $fontSelawikLight;
+  font-style: italic;
+  text-align: center;
+  @include rem-font-size(20px);
+  @include rem-fallback(padding, 100px);
+}

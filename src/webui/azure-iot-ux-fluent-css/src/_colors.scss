@@ -1,0 +1,18 @@
+/** 
+ * Common Azure IoT Colors
+ */
+
+@import "./dark/color.defaults";
+@import "./light/color.defaults";
+@import "../../src/styles/3mTheme/color.defaults";
+
+// Declare map with !default to allow colors in the map
+// to be overwritten by the consumer app
+$themes: () !default;
+
+// Add theme specific colors to the theme map
+$themes: map-merge((
+    dark: $theme-dark,
+    light: $theme-light,
+    mmm: $theme-mmm
+), $themes);

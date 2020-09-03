@@ -1,0 +1,66 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+// Import the tsiClient css from the node modules
+@import "node_modules/tsiclient/tsiclient";
+
+.telemetry-chart-container {
+  display: flex;
+  flex-flow: column nowrap;
+  flex-grow: 1;
+  overflow: hidden;
+
+  .chart-container {
+    @include rem-fallback(min-height, 150px);
+    flex-grow: 1;
+  }
+
+  .options-container > a {
+    cursor: pointer;
+  }
+
+  @include themify($themes) {
+    // Overrides of the TSIChart Lib
+    text { fill: themed('colorContentText'); }
+
+    .tsi-lineChart { background: transparent; }
+  }
+
+  div.tsi-splitByContainer div.tsi-splitByLabel 
+  {
+    margin-right: 0px !important;
+    select {
+      display: none;
+    }
+    h5{
+      margin: 0px !important;
+    }
+    .shown
+    {
+      height:25px;
+    }
+  }
+}
+.tsi-legend .tsi-seriesLabel .tsi-splitByContainer .tsi-splitByLabel{
+  align-items: center;
+  display: flex !important;
+}
+
+.tsi-legend:not(.compact).tsi-light .tsi-seriesLabel .tsi-splitByContainer .tsi-splitByLabel .tsi-eyeIcon{
+    position: static;
+    order: 1;
+    margin-left: 10px;
+}
+.tsi-legend .tsi-seriesLabel .tsi-splitByContainer .tsi-splitByLabel .tsi-colorKey{
+  margin-top: 0px;
+  position: static !important;
+}
+div.tsi-legend.tsi-light:not(.compact){
+  width: auto !important;
+}
+div.tsi-seriesLabel.shown.tsi-nsb
+{ 
+  margin-top:0px !important;
+  margin-bottom:0px !important;
+}

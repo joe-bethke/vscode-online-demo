@@ -1,0 +1,30 @@
+fullnameOverride: reverse-proxy
+replicaCount: 1
+image:
+  repository: reverse-proxy
+  pullPolicy: Never
+imagePullSecrets: []
+probes:
+  enabled: false
+service:
+  type: ClusterIP
+  internalPort: 10080
+  externalPort: 10080
+  internalHttpsPort: 10443
+  externalHttpsPort: 10443
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: traefik-azds
+  path: /
+  tls: []
+secrets:
+  letsencrypt:
+    ALLOWED_DOMAINS: azds.io
+    SITES: "*.azds.io"
+secretsRef:
+  - AppConfigurationConnectionString
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

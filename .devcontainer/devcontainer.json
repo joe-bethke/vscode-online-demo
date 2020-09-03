@@ -1,4 +1,10 @@
 {
     "postCreateCommand": "/bin/bash ./.devcontainer/post-create.sh > ~/post-create.log",
-    "postAttachCommand": "/bin/bash ./.devcontainer/post-attach.sh > ~/post-attach.log"
+    "postAttachCommand": "/bin/bash ./.devcontainer/post-attach.sh > ~/post-attach.log",
+    "remoteEnv": {
+        "AzureSubscriptionId": "c36fb2f8-f98d-40d0-90a9-d65e93acb428",
+        "AzureResourceGroupName": "rg-iot-crsl-dev",
+        "AzureAppConfigName": "crsliot-appconfig-dev",
+        "AzureAksName": "crsliot-aks-dev",
+    }
 }

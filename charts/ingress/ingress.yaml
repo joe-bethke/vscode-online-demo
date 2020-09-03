@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: crsliotkubedev
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/proxy-body-size: 200m
+spec:
+  tls:
+  - hosts:
+    - crsliotkubedev.centralus.cloudapp.azure.com
+    secretName: tls-prod
+  rules:
+  - host: crsliotkubedev.centralus.cloudapp.azure.com
+    http:
+      paths:
+      - backend:
+          serviceName: reverse-proxy
+          servicePort: 10080
+        path: /(.*)

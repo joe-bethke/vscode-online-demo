@@ -1,0 +1,5 @@
+steps:
+  - script: |-
+      which dotnet
+    displayName: Find dotnet command
+    continueOnError: true

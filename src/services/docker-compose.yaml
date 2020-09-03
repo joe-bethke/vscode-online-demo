@@ -1,0 +1,98 @@
+version: '3.7'
+services:
+  asa-manager:
+    build:
+      context: ../../
+      dockerfile: src/services/Dockerfile
+      args:
+        SERVICE_NAME: asa-manager
+        APP_CONFIGURATION_CONNECTION_STRING:
+        WEB_SERVICE_ASSEMBLY_NAME: Mmm.Iot.AsaManager.WebService.dll
+    ports:
+      - 8101:80
+    container_name: asa-manager
+    image: localhost/azureiot3m/asa-manager
+  config:
+    build:
+      context: ../../
+      dockerfile: src/services/Dockerfile
+      args:
+        SERVICE_NAME: config
+        APP_CONFIGURATION_CONNECTION_STRING:
+        WEB_SERVICE_ASSEMBLY_NAME: Mmm.Iot.Config.WebService.dll
+    ports:
+      - 8102:80
+    container_name: config
+    image: localhost/azureiot3m/config
+  device-telemetry:
+    build:
+      context: ../../
+      dockerfile: src/services/Dockerfile
+      args:
+        SERVICE_NAME: device-telemetry
+        APP_CONFIGURATION_CONNECTION_STRING:
+        WEB_SERVICE_ASSEMBLY_NAME: Mmm.Iot.DeviceTelemetry.WebService.dll
+    ports:
+      - 8103:80
+    container_name: device-telemetry
+    image: localhost/azureiot3m/device-telemetry
+  diagnostics:
+    build:
+      context: ../../
+      dockerfile: src/services/Dockerfile
+      args:
+        SERVICE_NAME: diagnostics
+        APP_CONFIGURATION_CONNECTION_STRING:
+        WEB_SERVICE_ASSEMBLY_NAME: Mmm.Iot.Diagnostics.WebService.dll
+    ports:
+      - 8104:80
+    container_name: diagnostics
+    image: localhost/azureiot3m/diagnostics
+  identity-gateway:
+    build:
+      context: ../../
+      dockerfile: src/services/Dockerfile
+      args:
+        SERVICE_NAME: identity-gateway
+        APP_CONFIGURATION_CONNECTION_STRING:
+        WEB_SERVICE_ASSEMBLY_NAME: Mmm.Iot.IdentityGateway.WebService.dll
+    ports:
+      - 8105:80
+    container_name: identity-gateway
+    image: localhost/azureiot3m/identity-gateway
+  iothub-manager:
+    build:
+      context: ../../
+      dockerfile: src/services/Dockerfile
+      args:
+        SERVICE_NAME: iothub-manager
+        APP_CONFIGURATION_CONNECTION_STRING:
+        WEB_SERVICE_ASSEMBLY_NAME: Mmm.Iot.IoTHubManager.WebService.dll
+    ports:
+      - 8106:80
+    container_name: iothub-manager
+    image: localhost/azureiot3m/iothub-manager
+  storage-adapter:
+    build:
+      context: ../../
+      dockerfile: src/services/Dockerfile
+      args:
+        SERVICE_NAME: storage-adapter
+        APP_CONFIGURATION_CONNECTION_STRING:
+        WEB_SERVICE_ASSEMBLY_NAME: Mmm.Iot.StorageAdapter.WebService.dll
+    ports:
+      - 8107:80
+    container_name: storage-adapter
+    image: localhost/azureiot3m/storage-adapter
+  tenant-manager:
+    build:
+      context: ../../
+      dockerfile: src/services/Dockerfile
+      args:
+        SERVICE_NAME: tenant-manager
+        APP_CONFIGURATION_CONNECTION_STRING:
+        WEB_SERVICE_ASSEMBLY_NAME: Mmm.Iot.TenantManager.WebService.dll
+    ports:
+      - 8108:80
+    container_name: tenant-manager
+    image: localhost/azureiot3m/tenant-manager

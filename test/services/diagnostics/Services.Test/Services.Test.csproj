@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <AssemblyName>Mmm.Iot.Diagnostics.Services.Test</AssemblyName>
+        <RootNamespace>$(AssemblyName)</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.2" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0-preview-20200116-01" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../common/Services.Test/Services.Test.csproj" />
+        <ProjectReference Include="../../../../src/services/common/Services/Services.csproj" />
+        <ProjectReference Include="../../common/TestHelpers/TestHelpers.csproj" />
+        <ProjectReference Include="../../../../src/services/diagnostics/Services/Services.csproj" />
+        <PackageReference Include="coverlet.msbuild" Version="2.8.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+</Project>

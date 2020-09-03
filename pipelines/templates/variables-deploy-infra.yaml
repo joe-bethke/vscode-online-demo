@@ -1,0 +1,61 @@
+parameters:
+  subscriptionName:
+  locationName:
+  environmentName:
+  subscriptionId:
+  applicationCode:
+  applicationShortCode:
+  environmentCategory:
+
+variables:
+  - template: variables-all.yaml
+  - name: armDirectory
+    value: pipelines/cd/arm
+  - name: cosmosDbName
+    value: iot
+  - name: crslPlatformKeyVault
+    value: crsliot-platform-akv
+  - name: defaultSasKeyName
+    value: RootManageSharedAccessKey
+  - name: tenantId
+    value: facac3c4-e2a5-4257-af76-205c8a821ddb
+  - name: userObjId
+    value: 64ee722c-2dfb-493a-8e29-26e16aae8022
+  - name: aksName
+    value: ${{parameters.applicationCode}}-$(aksPartialName)-${{parameters.environmentCategory}}
+  - name: appConfigurationName
+    value: ${{parameters.applicationCode}}-$(appConfigurationPartialName)-${{parameters.environmentCategory}}
+  - name: appInsightsName
+    value: ${{parameters.applicationCode}}-$(appInsightsPartialName)-${{parameters.environmentCategory}}
+  - name: armParametersDirectory
+    value: $(armDirectory)/parameters
+  - name: armTemplatesDirectory
+    value: $(armDirectory)/templates
+  - name: automationName
+    value: ${{parameters.applicationCode}}-$(automationPartialName)-${{parameters.environmentCategory}}
+  - name: blobContainerName
+    value: ${{parameters.applicationCode}}-$(blobContainerPartialName)-${{parameters.environmentCategory}}
+  - name: cosmosDbAccountName
+    value: ${{parameters.applicationCode}}-$(cosmosDbAccountPartialName)-${{parameters.environmentCategory}}
+  - name: eventHubName
+    value: ${{parameters.applicationCode}}-$(eventHubPartialName)-${{parameters.environmentCategory}}
+  - name: functionApp1Name
+    value: ${{parameters.applicationCode}}-$(functionApp1PartialName)-${{parameters.environmentCategory}}
+  - name: functionApp2Name
+    value: ${{parameters.applicationCode}}-$(functionApp2PartialName)-${{parameters.environmentCategory}}
+  - name: functionApp4Name
+    value: ${{parameters.applicationCode}}-$(functionApp4PartialName)-${{parameters.environmentCategory}}
+  - name: keyVaultName
+    value: ${{parameters.applicationCode}}-$(keyVaultPartialName)-${{parameters.environmentCategory}}
+  - name: mapsName
+    value: ${{parameters.applicationCode}}-$(mapsPartialName)-${{parameters.environmentCategory}}
+  - name: omsWorkspaceName
+    value: ${{parameters.applicationCode}}-$(omsWorkspacePartialName)-${{parameters.environmentCategory}}
+  - name: resourceGroupName
+    value: $(resourceGroupPartialName)-iot-${{parameters.applicationShortCode}}-${{parameters.environmentCategory}}
+  - name: storageAccountName
+    value: ${{parameters.applicationCode}}$(storageAccountPartialName)${{parameters.environmentCategory}}
+  - name: sendgridAccountName
+    value: ${{parameters.applicationCode}}$(sendgridAccountPartialName)${{parameters.environmentCategory}}
+  - name: tableStorageName
+    value: SystemAdmin

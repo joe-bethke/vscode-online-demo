@@ -1,0 +1,17 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namespaceName": { "value": "" },
+        "location": { "value": "" },
+        "eventhubSku": { "value": "Standard" },
+        "skuCapacity": { "value": 1 },
+        "throughputUnits": { "value": 3 },
+        "storageAccountName": { "value": ""},
+        "blobContainerName": { "value": "telemetry"},
+        "captureTime": { "value": 300},
+        "captureSize": { "value": 314572800},
+        "subscriptionId": { "value": "403f2258-d6b0-4c0a-b565-4102510935aa"},
+        "resourceGroup": { "value": "rg-crslbbiot-dev"}
+    }
+}

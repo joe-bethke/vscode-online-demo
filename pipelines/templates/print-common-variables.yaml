@@ -1,0 +1,5 @@
+steps:
+  - script: |-
+      echo Common.TestResultsDirectory: $(Common.TestResultsDirectory)
+    displayName: Print Common variables
+    continueOnError: true

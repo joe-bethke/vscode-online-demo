@@ -1,0 +1,17 @@
+kind: helm-release
+apiVersion: 1.1
+build:
+  context: ../
+  dockerfile: ../Dockerfile
+install:
+  chart: chart
+  set:
+    image:
+      tag: $(tag)
+    ingress:
+      hosts:
+      - $(spacePrefix)$(rootSpacePrefix)reverse-proxy$(hostSuffix)
+configurations:
+  develop:
+    build:
+      useGitIgnore: true

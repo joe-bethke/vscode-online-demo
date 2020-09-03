@@ -1,0 +1,24 @@
+kind: helm-release
+apiVersion: 1.1
+build:
+  context: ../
+  dockerfile: ../Dockerfile
+install:
+  chart: chart
+  set:
+    image:
+      tag: $(tag)
+    ingress:
+      hosts:
+      - $(spacePrefix)$(rootSpacePrefix)webui$(hostSuffix)
+configurations:
+  develop:
+    build:
+      useGitIgnore: true
+      syncTarget: ../src
+    container:
+      sync:
+      - "!**/package.json"
+      - "!**/*.{sln,csproj,sh}"
+      iterate:
+        processesToKill: [node]

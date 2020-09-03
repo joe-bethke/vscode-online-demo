@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "accountName": { "value": "crsl-cosmosdb" },
+        "location": { "value": "" },
+        "primaryRegion": { "value": "" },
+        "defaultConsistencyLevel": { "value": "Strong" },
+        "maxStalenessPrefix": { "value": 10 },
+        "maxIntervalInSeconds": { "value": 5 },
+        "multipleWriteLocations": { "value": false },
+        "automaticFailover": { "value": false },
+        "databaseName": { "value": "" }
+    }
+}

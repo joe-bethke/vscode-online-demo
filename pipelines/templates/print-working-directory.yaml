@@ -1,0 +1,5 @@
+steps:
+  - script: |-
+      pwd
+    displayName: Print working directory
+    continueOnError: true

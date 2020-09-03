@@ -1,0 +1,24 @@
+variables:
+  helmVersion: 2.16.7
+  certManagerVersion: 0.13.1
+  dotnetBuildConfiguration: Release
+  dotnetCoreRuntimeVersion: 3.1
+  dotnetProductionRuntimeId: linux-musl-x64
+  dockerHubServiceConnectionName: OdinDockerHub
+  dockerHubRepositoryName: azureiot3m
+  aksPartialName: aks
+  appConfigurationPartialName: appconfig
+  appInsightsPartialName: appinsight
+  blobContainerPartialName: telemetry
+  automationPartialName: automation
+  cosmosDbAccountPartialName: cosmos
+  eventHubPartialName: eventhub
+  functionApp1PartialName: devicetwinfuncapp
+  functionApp2PartialName: appconfigfuncapp
+  functionApp4PartialName: iotdeploymentfuncapp
+  keyVaultPartialName: keyvault
+  mapsPartialName: maps
+  omsWorkspacePartialName: loganalyticsws
+  resourceGroupPartialName: rg
+  storageAccountPartialName: storageacct
+  sendgridAccountPartialName: sendgrid

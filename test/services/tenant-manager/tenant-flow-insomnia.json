@@ -1,0 +1,1490 @@
+{
+    "_type": "export",
+    "__export_format": 4,
+    "__export_date": "2019-10-18T15:51:54.906Z",
+    "__export_source": "insomnia.desktop.app:v7.0.1",
+    "resources": [
+        {
+            "_id": "req_515b3a7f24994afda4e4b4f4f6687f34",
+            "authentication": {
+                "disabled": false,
+                "prefix": "Bearer",
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413838958,
+            "description": "",
+            "headers": [
+                {
+                    "disabled": false,
+                    "id": "pair_cc2b5c4ebb04407cbdbf2f2d0ef27ab5",
+                    "name": "X-Source",
+                    "value": "External"
+                },
+                {
+                    "disabled": false,
+                    "id": "pair_176c572a8dc44fd4af80919fea90baa5",
+                    "name": "azds-route-as",
+                    "value": "{{ azds_route_as  }}"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1562772031804,
+            "method": "POST",
+            "modified": 1571413838958,
+            "name": "Create Tenant",
+            "parameters": [],
+            "parentId": "fld_411da73943584103b528ad282ab161dd",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ tenant_manager_url }}/api/tenant",
+            "_type": "request"
+        },
+        {
+            "_id": "fld_411da73943584103b528ad282ab161dd",
+            "created": 1571413838955,
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1571413667992,
+            "modified": 1571413838955,
+            "name": "Tenant Operations",
+            "parentId": "fld_43c174f2ae5043109e8729c90773786e",
+            "_type": "request_group"
+        },
+        {
+            "_id": "fld_43c174f2ae5043109e8729c90773786e",
+            "created": 1571413838953,
+            "description": "",
+            "environment": {
+                "resourceGroupName": "rg-iot-crsl-dev",
+                "resourceName": "iothub-9f7f4312",
+                "resourceName2": "iothub-b9b6b88f",
+                "subscriptionId": "c36fb2f8-f98d-40d0-90a9-d65e93acb428"
+            },
+            "environmentPropertyOrder": {
+                "&": [
+                    "subscriptionId",
+                    "resourceGroupName",
+                    "resourceName",
+                    "resourceName2"
+                ]
+            },
+            "metaSortKey": -1569489093900.0625,
+            "modified": 1571413838953,
+            "name": "Tenant Management",
+            "parentId": "wrk_09580635158c45b0960ff2c33c4e7a9c",
+            "_type": "request_group"
+        },
+        {
+            "_id": "wrk_09580635158c45b0960ff2c33c4e7a9c",
+            "created": 1571413838938,
+            "description": "",
+            "modified": 1571413861261,
+            "name": "TenantFlow EXPORT",
+            "parentId": null,
+            "_type": "workspace"
+        },
+        {
+            "_id": "req_9c51eaf94baa4dfb8517faf9d3141591",
+            "authentication": {
+                "disabled": false,
+                "prefix": "Bearer",
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413838963,
+            "description": "",
+            "headers": [
+                {
+                    "disabled": false,
+                    "id": "pair_67dfe8a5ff8e4ad0994bd229868beb93",
+                    "name": "azds-route-as",
+                    "value": "{{ azds_route_as  }}"
+                },
+                {
+                    "disabled": false,
+                    "id": "pair_dca85ad125c4418db69fb01f81162ff8",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1562772031754,
+            "method": "GET",
+            "modified": 1571413838963,
+            "name": "Get Tenant",
+            "parameters": [],
+            "parentId": "fld_411da73943584103b528ad282ab161dd",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ tenant_manager_url }}/api/tenant/{{ tenant_id }}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_e6b8bc5e2c764e889f94e6db09ba8147",
+            "authentication": {
+                "prefix": "",
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413838960,
+            "description": "",
+            "headers": [
+                {
+                    "disabled": false,
+                    "id": "pair_7aaadd63699e45ee9df2f910806e7517",
+                    "name": "azds-route-as",
+                    "value": "{{ azds_route_as  }}"
+                },
+                {
+                    "id": "pair_2fa736d44ffb4055b6ca7ee67c509c70",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1562772031704,
+            "method": "GET",
+            "modified": 1571413838960,
+            "name": "Check if Tenant is Ready",
+            "parameters": [],
+            "parentId": "fld_411da73943584103b528ad282ab161dd",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ tenant_manager_url }}/api/tenantready/{{ tenant_id }}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_3c95afd025db4777a959c3040b1fe0f5",
+            "authentication": {
+                "disabled": false,
+                "prefix": "Bearer",
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413838965,
+            "description": "",
+            "headers": [
+                {
+                    "disabled": false,
+                    "id": "pair_58eee967ded7427fb0c4a71dbf840c8b",
+                    "name": "azds-route-as",
+                    "value": "{{ azds_route_as  }}"
+                },
+                {
+                    "disabled": false,
+                    "id": "pair_2a9910f36d904201896680e5047c92a6",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1562772031654,
+            "method": "DELETE",
+            "modified": 1571413838965,
+            "name": "Delete Tenant",
+            "parameters": [],
+            "parentId": "fld_411da73943584103b528ad282ab161dd",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ tenant_manager_url }}/api/tenant/{{ tenant_id }}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_b99d7bdc39da42069b92841ab452da47",
+            "authentication": {
+                "prefix": "",
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413838969,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_6e56bfca8c9b4ebe8181a37ed706d4b9",
+                    "name": "X-Source",
+                    "value": "External"
+                },
+                {
+                    "disabled": false,
+                    "id": "pair_59e80846bbae4588be2a7ead6a727023",
+                    "name": "azds-route-as",
+                    "value": "{{ azds_route_as  }}"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1562772031854,
+            "method": "GET",
+            "modified": 1571413838969,
+            "name": "Status",
+            "parameters": [],
+            "parentId": "fld_43c174f2ae5043109e8729c90773786e",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ tenant_manager_url }}/api/status",
+            "_type": "request"
+        },
+        {
+            "_id": "req_d55420c5217b422ea8cef1f3e7282c25",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413839042,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_ec540c810e144e9ea67c2bf8b77922e9",
+                    "name": "X-Source",
+                    "value": ""
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1571341339003,
+            "method": "GET",
+            "modified": 1571413839042,
+            "name": "Authorize",
+            "parameters": [],
+            "parentId": "fld_a9a4e16578084093b263414bd97db3d0",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/connect/authorize?redirect_uri=https://google.com",
+            "_type": "request"
+        },
+        {
+            "_id": "fld_a9a4e16578084093b263414bd97db3d0",
+            "created": 1571413839035,
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1571347140645,
+            "modified": 1571413839035,
+            "name": "Auth",
+            "parentId": "fld_43aacbb9b9dd424eba004e6ec1923e48",
+            "_type": "request_group"
+        },
+        {
+            "_id": "fld_43aacbb9b9dd424eba004e6ec1923e48",
+            "created": 1571413838971,
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1569489093850.0625,
+            "modified": 1571413838971,
+            "name": "IdentityGateway",
+            "parentId": "wrk_09580635158c45b0960ff2c33c4e7a9c",
+            "_type": "request_group"
+        },
+        {
+            "_id": "req_afa75904b2a24aa79da351ea1f670f18",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413839039,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_2f6876ff08b24c3d990b9850b034e849",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1571341338953,
+            "method": "GET",
+            "modified": 1571413839039,
+            "name": "Logout",
+            "parameters": [],
+            "parentId": "fld_a9a4e16578084093b263414bd97db3d0",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/connect/logout?post_logout_redirect_uri=https://google.com",
+            "_type": "request"
+        },
+        {
+            "_id": "req_6b0230ba93e347aea73a7850a22e68af",
+            "authentication": {
+                "disabled": false,
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413839037,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_bb8cce41b4974644b7392e3ce086bf20",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1571341338903,
+            "method": "POST",
+            "modified": 1571413839037,
+            "name": "Switch Tenant Flow",
+            "parameters": [],
+            "parentId": "fld_a9a4e16578084093b263414bd97db3d0",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/connect/switch/{{tenant_id}}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_efa5e8c437c54cdfada8fe8482602489",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413838987,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_29e105a6b0b94157966032efda25fe0c",
+                    "name": "ApplicationTenantId",
+                    "value": "{{ tenant_id  }}"
+                },
+                {
+                    "id": "pair_95e578c81b194e62937de6f5141e19ae",
+                    "name": "X-Source",
+                    "value": "External"
+                },
+                {
+                    "id": "pair_bb7e376064b24eedb58c8fa2fb6aae61",
+                    "name": "azds-route-as",
+                    "value": "{{azds_route_as}}"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1566074768944.625,
+            "method": "GET",
+            "modified": 1571413838987,
+            "name": "get all tenants",
+            "parameters": [],
+            "parentId": "fld_5715e706c45d450aa3e5ef52cecfaec6",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants/all",
+            "_type": "request"
+        },
+        {
+            "_id": "fld_5715e706c45d450aa3e5ef52cecfaec6",
+            "created": 1571413838975,
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1566074769094.625,
+            "modified": 1571413838975,
+            "name": "UserTenantRelationships",
+            "parentId": "fld_504e42c4d5f149b2b111d6b00cc136a1",
+            "_type": "request_group"
+        },
+        {
+            "_id": "fld_504e42c4d5f149b2b111d6b00cc136a1",
+            "created": 1571413838973,
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1571347140595,
+            "modified": 1571413838973,
+            "name": "ClaimsUserId",
+            "parentId": "fld_43aacbb9b9dd424eba004e6ec1923e48",
+            "_type": "request_group"
+        },
+        {
+            "_id": "req_634b42dbd702413685566979c7a06468",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413838978,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_a6b2aa1408064052aba2c6889ec83510",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_ddd7069b2bed49c6923df75370f304d3",
+                    "name": "X-Source",
+                    "value": "External"
+                },
+                {
+                    "id": "pair_3f665c97e22f46528739be181b11ab98",
+                    "name": "azds-route-as",
+                    "value": "{{azds_route_as}}"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1566074768894.625,
+            "method": "GET",
+            "modified": 1571413838978,
+            "name": "get tenant",
+            "parameters": [],
+            "parentId": "fld_5715e706c45d450aa3e5ef52cecfaec6",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants/",
+            "_type": "request"
+        },
+        {
+            "_id": "req_ceda2dbaf3124ea09c41cbf5c14ba157",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\"Roles\": \"[\\\"user\\\"]\"\n}"
+            },
+            "created": 1571413838983,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_9f66b30b45294543a36466a4150487d3",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_e6bf8da9138e4742b18b2ec376b2d24a",
+                    "name": "X-Source",
+                    "value": "External"
+                },
+                {
+                    "id": "pair_975cf85f3f0245a490a171bcf9c07b3b",
+                    "name": "azds-route-as",
+                    "value": "{{azds_route_as}}"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1566074768844.625,
+            "method": "POST",
+            "modified": 1571413838983,
+            "name": "post tenant",
+            "parameters": [],
+            "parentId": "fld_5715e706c45d450aa3e5ef52cecfaec6",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants",
+            "_type": "request"
+        },
+        {
+            "_id": "req_72a14997f5f0494c82431a3f2caa4a44",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\"Roles\": \"[\\\"admin\\\"]\"\n}"
+            },
+            "created": 1571413838980,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_e21e53a8ca5546a788c934fea0a24ec7",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_c3e63ea02a1945419ded609d862ad22a",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1566074768819.625,
+            "method": "PUT",
+            "modified": 1571413838980,
+            "name": "put tenant",
+            "parameters": [],
+            "parentId": "fld_5715e706c45d450aa3e5ef52cecfaec6",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants",
+            "_type": "request"
+        },
+        {
+            "_id": "req_42a42ab35dc649ed9254a7c94b2d26af",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n}"
+            },
+            "created": 1571413838985,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_1043ce84a36448898007179c708a834b",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_fc1425a75ff2455f9cda7d95aa56c71d",
+                    "name": "X-Source",
+                    "value": "External"
+                },
+                {
+                    "id": "pair_295a7098af674428b925b86ce8e8c89e",
+                    "name": "azds-route-as",
+                    "value": "{{azds_route_as}}"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1566074768794.625,
+            "method": "DELETE",
+            "modified": 1571413838985,
+            "name": "del tenant",
+            "parameters": [],
+            "parentId": "fld_5715e706c45d450aa3e5ef52cecfaec6",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants",
+            "_type": "request"
+        },
+        {
+            "_id": "req_bfd20231a79344b8b8676b8aef85d5ef",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413839002,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_a2b4a6890df441a492a96dd12fc6e6c4",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_c7dc9c63a57b454fae2174e559e34d5f",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_161ba64a052549d3a684a795ee728e13",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1568120598043.875,
+            "method": "GET",
+            "modified": 1571413839002,
+            "name": "get all settings",
+            "parameters": [],
+            "parentId": "fld_d0390025f8774f4799958c34a1c7d5c4",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/settings/all",
+            "_type": "request"
+        },
+        {
+            "_id": "fld_d0390025f8774f4799958c34a1c7d5c4",
+            "created": 1571413838990,
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1566074769044.625,
+            "modified": 1571413838990,
+            "name": "UserSettings",
+            "parentId": "fld_504e42c4d5f149b2b111d6b00cc136a1",
+            "_type": "request_group"
+        },
+        {
+            "_id": "req_993344c7f2394bd1a7a751c97ad47712",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413838992,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_a2b4a6890df441a492a96dd12fc6e6c4",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_c7dc9c63a57b454fae2174e559e34d5f",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_161ba64a052549d3a684a795ee728e13",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1568120597993.875,
+            "method": "GET",
+            "modified": 1571413838992,
+            "name": "get setting",
+            "parameters": [],
+            "parentId": "fld_d0390025f8774f4799958c34a1c7d5c4",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/settings/LastUsedTenant",
+            "_type": "request"
+        },
+        {
+            "_id": "req_a60a266b1fec4c65bb6a985540bf8e37",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413838994,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_2eb84325ef9f46daae35fd31f978d0cd",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_2fd18d94eccf4d9ca0a16e7cf6ac8cd2",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_4be1137fa79d4046af960e43c852d388",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1568120597943.875,
+            "method": "POST",
+            "modified": 1571413838994,
+            "name": "post setting",
+            "parameters": [],
+            "parentId": "fld_d0390025f8774f4799958c34a1c7d5c4",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/settings/LastUsedTenant/{{ tenant_id  }}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_45d571b1266946e3a7db8e0e1cfafa25",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413838997,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_7bddc12ac2634d079f7e41e90550de07",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_a6a76220ed4442d5b4c8beb462c66e1f",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_672ec1fcb27b4c209074043f989c1668",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1568120597893.875,
+            "method": "PUT",
+            "modified": 1571413838997,
+            "name": "put setting",
+            "parameters": [],
+            "parentId": "fld_d0390025f8774f4799958c34a1c7d5c4",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/settings/LastUsedTenant/{{ tenant_id  }}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_2023eb67def9423393b34405a73562d1",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413838999,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_a3c5501f61e94825b2eb6590fc94d2f0",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_8dfd5125d3304f6981b7e48d6e5377d1",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_8a815e51eb9846ffb3019e531ede5894",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1568120597843.875,
+            "method": "DELETE",
+            "modified": 1571413838999,
+            "name": "del setting",
+            "parameters": [],
+            "parentId": "fld_d0390025f8774f4799958c34a1c7d5c4",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/settings/LastUsedTenant",
+            "_type": "request"
+        },
+        {
+            "_id": "req_6b779b2bdb02458ca7075f47a80d507a",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413839019,
+            "description": "",
+            "headers": [
+                {
+                    "disabled": false,
+                    "id": "pair_41c64fd97a664f0ca36cbaeec7951cbb",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_d05966fd0f7746e79be8314d24bdfa86",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1566074769044.625,
+            "method": "GET",
+            "modified": 1571413839019,
+            "name": "get all tenants",
+            "parameters": [],
+            "parentId": "fld_4cacb09dc4984b93bdccb3bde8c3ba77",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants/{{user_id}}/all",
+            "_type": "request"
+        },
+        {
+            "_id": "fld_4cacb09dc4984b93bdccb3bde8c3ba77",
+            "created": 1571413839007,
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1566074769094.625,
+            "modified": 1571413839007,
+            "name": "UserTenantRelationships",
+            "parentId": "fld_5913b72b0c224ebd92f22249d1ee3eec",
+            "_type": "request_group"
+        },
+        {
+            "_id": "fld_5913b72b0c224ebd92f22249d1ee3eec",
+            "created": 1571413839006,
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1570708296991.75,
+            "modified": 1571413839006,
+            "name": "UrlUserId",
+            "parentId": "fld_43aacbb9b9dd424eba004e6ec1923e48",
+            "_type": "request_group"
+        },
+        {
+            "_id": "req_7dc1a87e96064c3d9339f805c292b2d2",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413839009,
+            "description": "",
+            "headers": [
+                {
+                    "disabled": false,
+                    "id": "pair_c7dc9c63a57b454fae2174e559e34d5f",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_558fb7716e3d471cb8da0e0324112ff8",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1566074769041.5,
+            "method": "GET",
+            "modified": 1571413839009,
+            "name": "get tenant",
+            "parameters": [],
+            "parentId": "fld_4cacb09dc4984b93bdccb3bde8c3ba77",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants/{{user_id}}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_5df65d1d26044e20a2f937db18b7a447",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\"Roles\": \"[\\\"user\\\"]\"\n}"
+            },
+            "created": 1571413839015,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_bae6c8afa505447d951e46d5ca5aee71",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_2f2d3085ce3d4778b551c878881296ba",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1566074769035.25,
+            "method": "POST",
+            "modified": 1571413839015,
+            "name": "post tenant",
+            "parameters": [],
+            "parentId": "fld_4cacb09dc4984b93bdccb3bde8c3ba77",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants/{{user_id}}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_d0dc80939e984c8693c3f2ab82b9b99c",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\"Roles\": \"[\\\"admin\\\"]\"\n}"
+            },
+            "created": 1571413839012,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_4b54a9edc48e492dab7c89a5012183d2",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_c6e2421ac8894efc92370fdf6a02dec6",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_0b1cdac761c0412db992851dedc6f80e",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1566074769032.125,
+            "method": "PUT",
+            "modified": 1571413839012,
+            "name": "put tenant",
+            "parameters": [],
+            "parentId": "fld_4cacb09dc4984b93bdccb3bde8c3ba77",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants/{{user_id}}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_706fb9838e8443a88b8a625c88c205c6",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n}"
+            },
+            "created": 1571413839017,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_984a107329c540dea7521fee46f8b98a",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_fae33752cc7e42f3aae0d5288ea86af3",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_74ec852f80a642268307f69a07f335a8",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1566074768982.125,
+            "method": "DELETE",
+            "modified": 1571413839017,
+            "name": "del tenant",
+            "parameters": [],
+            "parentId": "fld_4cacb09dc4984b93bdccb3bde8c3ba77",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants/{{user_id}}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_28a22e84c0154422aa1c5c98aba07c9e",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413839032,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_a2b4a6890df441a492a96dd12fc6e6c4",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_c7dc9c63a57b454fae2174e559e34d5f",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_161ba64a052549d3a684a795ee728e13",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1568120598043.875,
+            "method": "GET",
+            "modified": 1571413839032,
+            "name": "get all settings",
+            "parameters": [],
+            "parentId": "fld_354355ccfff54329a75737f4e4bc505e",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/settings/{{user_id}}/all",
+            "_type": "request"
+        },
+        {
+            "_id": "fld_354355ccfff54329a75737f4e4bc505e",
+            "created": 1571413839022,
+            "description": "",
+            "environment": {},
+            "environmentPropertyOrder": null,
+            "metaSortKey": -1566074769044.625,
+            "modified": 1571413839022,
+            "name": "UserSettings",
+            "parentId": "fld_5913b72b0c224ebd92f22249d1ee3eec",
+            "_type": "request_group"
+        },
+        {
+            "_id": "req_58fbb3a3fd684a72b7221c436a8cabd9",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413839024,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_a2b4a6890df441a492a96dd12fc6e6c4",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_c7dc9c63a57b454fae2174e559e34d5f",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_161ba64a052549d3a684a795ee728e13",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1568120597993.875,
+            "method": "GET",
+            "modified": 1571413839024,
+            "name": "get setting",
+            "parameters": [],
+            "parentId": "fld_354355ccfff54329a75737f4e4bc505e",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/settings/{{user_id}}/LastUsedTenant",
+            "_type": "request"
+        },
+        {
+            "_id": "req_f89054fbc5dd47b39322d888352bfa16",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413839026,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_2eb84325ef9f46daae35fd31f978d0cd",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_2fd18d94eccf4d9ca0a16e7cf6ac8cd2",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_4be1137fa79d4046af960e43c852d388",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1568120597943.875,
+            "method": "POST",
+            "modified": 1571413839026,
+            "name": "post setting",
+            "parameters": [],
+            "parentId": "fld_354355ccfff54329a75737f4e4bc505e",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/settings/{{user_id}}/LastUsedTenant/{{ tenant_id  }}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_5dca3078b45249089dfa6f180fd6bf70",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413839027,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_7bddc12ac2634d079f7e41e90550de07",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_a6a76220ed4442d5b4c8beb462c66e1f",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_672ec1fcb27b4c209074043f989c1668",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1568120597893.875,
+            "method": "PUT",
+            "modified": 1571413839027,
+            "name": "put setting",
+            "parameters": [],
+            "parentId": "fld_354355ccfff54329a75737f4e4bc505e",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/settings/{{user_id}}/LastUsedTenant/{{ tenant_id  }}",
+            "_type": "request"
+        },
+        {
+            "_id": "req_eace84b434f14b8a8857141b9263cecd",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n\t\n}"
+            },
+            "created": 1571413839029,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_a3c5501f61e94825b2eb6590fc94d2f0",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_8dfd5125d3304f6981b7e48d6e5377d1",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_8a815e51eb9846ffb3019e531ede5894",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1568120597843.875,
+            "method": "DELETE",
+            "modified": 1571413839029,
+            "name": "del setting",
+            "parameters": [],
+            "parentId": "fld_354355ccfff54329a75737f4e4bc505e",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/settings/{{user_id}}/LastUsedTenant",
+            "_type": "request"
+        },
+        {
+            "_id": "req_3bcbc048fcb84b47a786456d63487c84",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413839044,
+            "description": "",
+            "headers": [
+                {
+                    "disabled": false,
+                    "id": "pair_d0397b3828ff4dbab8481c10ca99264f",
+                    "name": "ApplicationTenantId",
+                    "value": "abc"
+                },
+                {
+                    "id": "pair_a435180a08f542759d6739a3637d16e1",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1568791766182,
+            "method": "GET",
+            "modified": 1571413839044,
+            "name": "Status",
+            "parameters": [],
+            "parentId": "fld_43aacbb9b9dd424eba004e6ec1923e48",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/status",
+            "_type": "request"
+        },
+        {
+            "_id": "req_80d7235ef96f4776b930cc6f67dcfc98",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {},
+            "created": 1571413839047,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_d3207421b593470791d5a2ed0cf2083c",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_6f25758a0219433382821d2970b4273a",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1566069381413.8125,
+            "method": "GET",
+            "modified": 1571413839047,
+            "name": "get all users of current tenant (in token)",
+            "parameters": [],
+            "parentId": "fld_43aacbb9b9dd424eba004e6ec1923e48",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants/users",
+            "_type": "request"
+        },
+        {
+            "_id": "req_74a936e1147d45c0851953ff173c63b0",
+            "authentication": {
+                "token": "{{bearer_token}}",
+                "type": "bearer"
+            },
+            "body": {
+                "mimeType": "application/json",
+                "text": "{\n}"
+            },
+            "created": 1571413839046,
+            "description": "",
+            "headers": [
+                {
+                    "id": "pair_749d98b5c6ec41919c2043ca36bc9fe4",
+                    "name": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "id": "pair_93164f0921ea4879824479456a509a65",
+                    "name": "ApplicationTenantId",
+                    "value": "{{tenant_id}}"
+                },
+                {
+                    "id": "pair_87a0c090a4d04d2eacc06d47ad7113ef",
+                    "name": "X-Source",
+                    "value": "External"
+                }
+            ],
+            "isPrivate": false,
+            "metaSortKey": -1564342588887.125,
+            "method": "DELETE",
+            "modified": 1571413839046,
+            "name": "del all tenant",
+            "parameters": [],
+            "parentId": "fld_43aacbb9b9dd424eba004e6ec1923e48",
+            "settingDisableRenderRequestBody": false,
+            "settingEncodeUrl": true,
+            "settingRebuildPath": true,
+            "settingSendCookies": true,
+            "settingStoreCookies": true,
+            "url": "{{ identity_gateway_url }}/v1/tenants/all",
+            "_type": "request"
+        },
+        {
+            "_id": "env_07c8cc42f5fe4847805a1b106e80a47f",
+            "color": null,
+            "created": 1571413838941,
+            "data": {},
+            "dataPropertyOrder": null,
+            "isPrivate": false,
+            "metaSortKey": 1571410178892,
+            "modified": 1571413838941,
+            "name": "Base Environment",
+            "parentId": "wrk_09580635158c45b0960ff2c33c4e7a9c",
+            "_type": "environment"
+        },
+        {
+            "_id": "jar_050bbabb00bb47869f4fe6f07bb99645",
+            "cookies": [
+                {
+                    "creation": "2019-10-18T15:14:39.562Z",
+                    "domain": "google.com",
+                    "expires": "2019-11-17T15:14:51.000Z",
+                    "extensions": [
+                        "SameSite=none"
+                    ],
+                    "hostOnly": false,
+                    "id": "027704144096345473",
+                    "key": "1P_JAR",
+                    "lastAccessed": "2019-10-18T15:14:39.562Z",
+                    "path": "/",
+                    "value": "2019-10-18-15"
+                },
+                {
+                    "creation": "2019-10-18T15:14:39.562Z",
+                    "domain": "google.com",
+                    "expires": "2020-04-18T15:14:51.000Z",
+                    "hostOnly": false,
+                    "httpOnly": true,
+                    "id": "8185713101749166",
+                    "key": "NID",
+                    "lastAccessed": "2019-10-18T15:14:39.562Z",
+                    "path": "/",
+                    "value": "189=NcakENjzdaCmB_m2UZQCBp00PT45wG8txdL-L_-k9rWbagv-JcL81WLejBPXzFqOHPVt7Z8j6_DgR1mwQymcBWleypv6699JJLTue2j8VzJLdGU-LRzgY2VRpoyvy7bmDkPJUzENzFk1y-yfdcgy1HpxJmSV6uCWFLg0lpC2t90"
+                }
+            ],
+            "created": 1571413838951,
+            "modified": 1571413838951,
+            "name": "Default Jar",
+            "parentId": "wrk_09580635158c45b0960ff2c33c4e7a9c",
+            "_type": "cookie_jar"
+        },
+        {
+            "_id": "env_7ec67a2c24734b69ba89bb82754d9437",
+            "color": null,
+            "created": 1571413838947,
+            "data": {
+                "azds_route_as": "",
+                "bearer_token": "",
+                "identity_gateway_url": "",
+                "tenant_id": "",
+                "tenant_manager_url": "",
+                "user_id": ""
+            },
+            "dataPropertyOrder": {
+                "&": [
+                    "tenant_manager_url",
+                    "identity_gateway_url",
+                    "bearer_token",
+                    "user_id",
+                    "tenant_id",
+                    "azds_route_as"
+                ]
+            },
+            "isPrivate": false,
+            "metaSortKey": 1571413683410,
+            "modified": 1571413838947,
+            "name": "Export",
+            "parentId": "env_07c8cc42f5fe4847805a1b106e80a47f",
+            "_type": "environment"
+        }
+    ]
+}

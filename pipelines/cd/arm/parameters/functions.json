@@ -1,0 +1,16 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "functionAppName": { "value": "crslfunctionapp" },
+      "skuName": { "value": "Y1" },
+      "skuCapacity": { "value": 1 },
+      "skuTier": { "value": "Standard" },
+      "appInsightsName": { "value": ""},
+      "appInsightsLocation": { "value": "eastus" },
+      "storageAccountName": { "value": "" },
+      "runtime": { "value": "dotnet" },
+      "funcVersion": { "value": "~2" },
+      "codedeployPackageUrl": { "value": "" }
+    }
+  }

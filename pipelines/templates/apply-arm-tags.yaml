@@ -1,0 +1,13 @@
+parameters:
+  environment:
+steps:
+  - task: Bash@3
+    displayName: Tag ARM templates
+    inputs:
+      targetType: inline
+      script: |
+        # Write your commands here-
+        docker run -v $(pwd):/app/volume  -e pathToTemplateFile=templates -e pathToTagFile="tagging/${{ parameters.environment }}.json" nemcrunchers/azure-arm-tagger 2>&1 > error.log
+        cat error.log
+      workingDirectory: pipelines/cd/arm
+      failOnStderr: true

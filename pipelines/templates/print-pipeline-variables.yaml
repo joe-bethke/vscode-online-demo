@@ -1,0 +1,5 @@
+steps:
+  - script: |-
+      echo Pipeline.Workspace: $(Pipeline.Workspace)
+    displayName: Print Pipeline variables
+    continueOnError: true

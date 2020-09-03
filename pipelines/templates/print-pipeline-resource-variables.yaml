@@ -1,0 +1,19 @@
+parameters:
+  pipelineResourceName:
+
+steps:
+  - script: |-
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.projectName: $(resources.pipeline.${{parameters.pipelineResourceName}}.projectName)
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.projectID: $(resources.pipeline.${{parameters.pipelineResourceName}}.projectID)
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.pipelineName: $(resources.pipeline.${{parameters.pipelineResourceName}}.pipelineName)
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.pipelineID: $(resources.pipeline.${{parameters.pipelineResourceName}}.pipelineID)
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.runName: $(resources.pipeline.${{parameters.pipelineResourceName}}.runName)
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.runID: $(resources.pipeline.${{parameters.pipelineResourceName}}.runID)
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.runURI: $(resources.pipeline.${{parameters.pipelineResourceName}}.runURI)
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.sourceBranch: $(resources.pipeline.${{parameters.pipelineResourceName}}.sourceBranch)
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.sourceCommit: $(resources.pipeline.${{parameters.pipelineResourceName}}.sourceCommit)
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.sourceProvider: $(resources.pipeline.${{parameters.pipelineResourceName}}.sourceProvider)
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.requestedFor: $(resources.pipeline.${{parameters.pipelineResourceName}}.requestedFor)
+      echo resources.pipeline.${{parameters.pipelineResourceName}}.requestedForID: $(resources.pipeline.${{parameters.pipelineResourceName}}.requestedForID)
+    displayName: Print pipeline resource variables
+    continueOnError: true

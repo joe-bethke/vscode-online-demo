@@ -1,0 +1,5 @@
+steps:
+  - script: |-
+      find $(Agent.BuildDirectory)
+    displayName: List Agent build directory contents
+    continueOnError: true

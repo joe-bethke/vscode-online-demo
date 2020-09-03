@@ -1,0 +1,12 @@
+parameters:
+  environmentName:
+
+jobs:
+  - deployment: getApproval
+    displayName: Get approval
+    environment: ${{parameters.environmentName}}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - script: echo Deployment was approved

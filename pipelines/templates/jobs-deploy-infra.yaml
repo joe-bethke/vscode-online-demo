@@ -1,0 +1,1249 @@
+parameters:
+  subscriptionName:
+  locationName:
+  environmentName:
+  subscriptionId:
+  applicationCode:
+  applicationShortCode:
+  appInsightsLocation:
+  environmentCategory:
+  kubernetesVersion:
+  sendgridEmail:
+  aksAgentVmSize: Standard_DS2_v2
+  sysAdmins:
+
+jobs:
+  - template: get-approval.yaml
+    parameters:
+      environmentName: ${{parameters.environmentName}}
+
+  - job: printVariables
+    displayName: Print variables
+    dependsOn:
+      - getApproval
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: none
+
+      - template: print-pipeline-resource-variables.yaml
+        parameters:
+          pipelineResourceName: test
+
+      - script: |-
+          echo "parameter: subscriptionName: ${{parameters.subscriptionName}}"
+          echo "parameter: locationName: ${{parameters.locationName}}"
+          echo "parameter: appInsightsLocation: ${{parameters.appInsightsLocation}}"
+          echo "parameter: environmentName: ${{parameters.environmentName}}"
+          echo "parameter: subscriptionId: ${{parameters.subscriptionId}}"
+          echo "parameter: applicationCode: ${{parameters.applicationCode}}"
+          echo "parameter: applicationShortCode: ${{parameters.applicationShortCode}}"
+          echo "parameter: environmentCategory: ${{parameters.environmentCategory}}"
+          echo "parameter: kubernetesVersion: ${{parameters.kubernetesVersion}}"
+          echo "parameter: sendgridEmail: ${{parameters.sendgridEmail}}"
+          echo "variable: aksPartialName: $(aksPartialName)"
+          echo "variable: appConfigurationPartialName: $(appConfigurationPartialName)"
+          echo "variable: appInsightsPartialName: $(appInsightsPartialName)"
+          echo "variable: armDirectory: $(armDirectory)"
+          echo "variable: automationPartialName: $(automationPartialName)"
+          echo "variable: blobContainerPartialName: $(blobContainerPartialName)"
+          echo "variable: cosmosDbName: $(cosmosDbName)"
+          echo "variable: cosmosDbAccountPartialName: $(cosmosDbAccountPartialName)"
+          echo "variable: crslPlatformKeyVault: $(crslPlatformKeyVault)"
+          echo "variable: defaultSasKeyName: $(defaultSasKeyName)"
+          echo "variable: eventHubPartialName: $(eventHubPartialName)"
+          echo "variable: functionApp1PartialName: $(functionApp1PartialName)"
+          echo "variable: functionApp2PartialName: $(functionApp2PartialName)"
+          echo "variable: keyVaultPartialName: $(keyVaultPartialName)"
+          echo "variable: mapsPartialName: $(mapsPartialName)"
+          echo "variable: omsWorkspacePartialName: $(omsWorkspacePartialName)"
+          echo "variable: storageAccountPartialName: $(storageAccountPartialName)"
+          echo "variable: tenantId: $(tenantId)"
+          echo "variable: userObjId: $(userObjId)"
+          echo "variable: aksName: $(aksName)"
+          echo "variable: appConfigurationName: $(appConfigurationName)"
+          echo "variable: appInsightsName: $(appInsightsName)"
+          echo "variable: armParametersDirectory: $(armParametersDirectory)"
+          echo "variable: armTemplatesDirectory: $(armTemplatesDirectory)"
+          echo "variable: automationName: $(automationName)"
+          echo "variable: blobContainerName: $(blobContainerName)"
+          echo "variable: cosmosDbAccountName: $(cosmosDbAccountName)"
+          echo "variable: eventHubName: $(eventHubName)"
+          echo "variable: functionApp1Name: $(functionApp1Name)"
+          echo "variable: functionApp2Name: $(functionApp2Name)"
+          echo "variable: keyVaultName: $(keyVaultName)"
+          echo "variable: mapsName: $(mapsName)"
+          echo "variable: omsWorkspaceName: $(omsWorkspaceName)"
+          echo "variable: resourceGroupName: $(resourceGroupName)"
+          echo "variable: storageAccountName: $(storageAccountName)"
+        displayName: Print variables
+
+  - job: resourceGroup
+    displayName: Provision resource group
+    dependsOn:
+      - getApproval
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - script: |-
+          set -Eeuxo pipefail
+            sudo apt-get update && sudo apt-get install --only-upgrade -y azure-cli
+            az --version
+        displayName: Update Azure CLI
+
+      - task: AzureCLI@2
+        displayName: Provision Azure resource group
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |-
+            set -Eeuxo pipefail
+            az deployment sub create \
+            --name $(resourceGroupPartialName)-$(date +%s) \
+            --location ${{parameters.locationName}} \
+            --template-file $(armTemplatesDirectory)/$(resourceGroupPartialName).json \
+            --parameters @$(armParametersDirectory)/$(resourceGroupPartialName).json resourceGroupName=$(resourceGroupName) resourceGroupLocation=${{parameters.locationName}}
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(resourceGroupPartialName)
+
+  - job: aks
+    displayName: Provision AKS
+    dependsOn:
+      - resourceGroup
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Provision Azure Log Analytics
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/loganalytics.json
+          csmParametersFile: $(armParametersDirectory)/loganalytics.json
+          overrideParameters: -omsWorkspaceName $(omsWorkspaceName)
+          deploymentMode: Incremental
+          addSpnToEnvironment: true
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(omsWorkspacePartialName)
+          resourceGroupName: $(resourceGroupName)
+
+      - task: AzureCLI@2
+        displayName: Update the service principal key for AKS
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |-
+            set -Eeuxo pipefail
+            aksInstanceCount=`az aks list --query "[?name=='$(aksName)'] | length(@)"`
+            if [ "$aksInstanceCount" != "0" ]
+            then
+              az aks update-credentials --resource-group $(resourceGroupName) --name $(aksName) --reset-service-principal --service-principal $servicePrincipalId --client-secret $servicePrincipalKey
+            fi
+          addSpnToEnvironment: true
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Provision Azure Kubernetes Service
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/$(aksPartialName).json
+          csmParametersFile: $(armParametersDirectory)/$(aksPartialName).json
+          overrideParameters: >-
+            -resourceName $(aksName)
+            -location ${{parameters.locationName}}
+            -dnsPrefix $(aksName)-dns
+            -servicePrincipalClientId $servicePrincipalId
+            -servicePrincipalClientSecret $servicePrincipalKey
+            -omsWorkspaceName $(omsWorkspaceName)
+            -kubernetesVersion ${{parameters.kubernetesVersion}}
+            -agentVMSize ${{parameters.aksAgentVmSize}}
+          deploymentMode: Incremental
+          addSpnToEnvironment: true
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(aksPartialName)
+          resourceGroupName: $(resourceGroupName)
+
+      - task: Kubernetes@1
+        displayName: Create K8s ingress namespace
+        inputs:
+          connectionType: Azure Resource Manager
+          azureSubscriptionEndpoint: ${{parameters.subscriptionName}}
+          azureResourceGroup: $(resourceGroupName)
+          kubernetesCluster: $(aksName)
+          command: apply
+          useConfigurationFile: true
+          configurationType: inline
+          inline: |
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: ingress-basic
+
+      - task: Kubernetes@1
+        displayName: Install the K8s Custom Resource Definition
+        inputs:
+          connectionType: Azure Resource Manager
+          azureSubscriptionEndpoint: ${{parameters.subscriptionName}}
+          azureResourceGroup: $(resourceGroupName)
+          kubernetesCluster: $(aksName)
+          command: apply
+          arguments: --validate=false -f https://raw.githubusercontent.com/jetstack/cert-manager/v$(certManagerVersion)/deploy/manifests/00-crds.yaml
+          outputFormat: name
+
+      - task: Kubernetes@1
+        displayName: Create K8s cert-manager namespace
+        inputs:
+          connectionType: Azure Resource Manager
+          azureSubscriptionEndpoint: ${{parameters.subscriptionName}}
+          azureResourceGroup: $(resourceGroupName)
+          kubernetesCluster: $(aksName)
+          command: apply
+          useConfigurationFile: true
+          configurationType: inline
+          inline: |
+            apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: cert-manager
+              labels:
+                cert-manager.io/disable-validation: "true"
+
+  - job: storageAccount
+    displayName: Provision Storage Account
+    dependsOn:
+      - resourceGroup
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Provision Azure Storage Account
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/$(storageAccountPartialName).json
+          csmParametersFile: $(armParametersDirectory)/$(storageAccountPartialName).json
+          overrideParameters: -storageAccountName $(storageAccountName) -blobContainerName $(blobContainerName) -location ${{parameters.locationName}}
+          deploymentMode: Incremental
+          addSpnToEnvironment: true
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(storageAccountPartialName)
+          resourceGroupName: $(resourceGroupName)
+
+  - job: addSysAdmins
+    displayName: Add System Administrators
+    dependsOn:
+      - storageAccount
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - task: AzurePowerShell@5
+        displayName: Add System Administrators
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          azurePowerShellVersion: latestVersion
+          scriptType: inlineScript
+          inline: |-
+            $storageAccountContext = (Get-AzStorageAccount -ResourceGroupName $(resourceGroupName) -Name $(storageAccountName)).Context
+            $tableExists = (Get-AzStorageTable -Context $storageAccountContext | Select-Object -ExpandProperty Name) -Contains '$(tableStorageName)'
+            if (!$tableExists) {
+              New-AzStorageTable -Name $(tableStorageName) -Context $storageAccountContext
+              $cloudTable = (Get-AzStorageTable -Name $(tableStorageName) -Context $storageAccountContext).CloudTable
+              Install-Module -Name AzTable -Force
+              '${{parameters.sysAdmins}}' | ConvertFrom-Json -Depth 100 | Write-Output | ForEach-Object {
+                Add-AzTableRow -Table $cloudTable -PartitionKey $_.UserId -RowKey $_.UserId -Property @{ "Name" = $_.Name }
+                Get-AzTableRow -Table $cloudTable | Format-Table
+              }
+            }
+
+  - job: eventHub
+    displayName: Provision Event Hub
+    dependsOn:
+      - storageAccount
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Provision Azure Event Hub
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/$(eventHubPartialName).json
+          csmParametersFile: $(armParametersDirectory)/$(eventHubPartialName).json
+          overrideParameters: '-namespaceName $(eventHubName) -resourceGroup $(resourceGroupName) -location ${{parameters.locationName}} -storageAccountName $(storageAccountName) -subscriptionId ${{parameters.subscriptionId}}'
+          deploymentMode: Incremental
+          addSpnToEnvironment: true
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(eventHubPartialName)
+          resourceGroupName: $(resourceGroupName)
+
+  - job: keyVault
+    displayName: Provision Key Vault
+    dependsOn:
+      - resourceGroup
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureCLI@2
+        displayName: Get object ID of Azure service principal
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |-
+            objectId=$(az ad sp show --id $servicePrincipalId | jq -r .objectId)
+            echo $objectId
+            echo "##vso[task.setvariable variable=servicePrincipalObjectId]$objectId"
+          addSpnToEnvironment: true
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Provision Azure Key Vault
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/$(keyVaultPartialName).json
+          csmParametersFile: $(armParametersDirectory)/$(keyVaultPartialName).json
+          overrideParameters: -resourceName $(keyVaultName) -applicationObjId $(servicePrincipalObjectId) -userObjId $(userObjId)
+          deploymentMode: Incremental
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(keyVaultPartialName)
+          resourceGroupName: $(resourceGroupName)
+
+  - job: maps
+    displayName: Provision Maps
+    dependsOn:
+      - resourceGroup
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Provision Azure Maps
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/$(mapsPartialName).json
+          csmParametersFile: $(armParametersDirectory)/$(mapsPartialName).json
+          overrideParameters: -mapsAccountName $(mapsName)
+          deploymentMode: Incremental
+          addSpnToEnvironment: true
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(mapsPartialName)
+          resourceGroupName: $(resourceGroupName)
+
+  - job: appConfiguration
+    displayName: Provision App Configuration
+    dependsOn:
+      - resourceGroup
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Provision Azure App Configuration
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/$(appConfigurationPartialName).json
+          csmParametersFile: $(armParametersDirectory)/$(appConfigurationPartialName).json
+          overrideParameters: -appConfigName $(appConfigurationName) -location ${{parameters.locationName}}
+          deploymentMode: Incremental
+          addSpnToEnvironment: true
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(appConfigurationPartialName)
+          resourceGroupName: $(resourceGroupName)
+
+  - job: globalsecrets
+    displayName: Create K8s secrets
+    dependsOn:
+      - appConfiguration
+      - aks
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: none
+
+      - task: AzureCLI@2
+        displayName: Create K8s globalsecrets secret
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |-
+            az aks get-credentials -n $(aksName) -g $(resourceGroupName)
+            appConfigurationConnectionString=$(az appconfig credential list --name $(appConfigurationName) -g $(resourceGroupName) | jq -r .[0].connectionString)
+            kubectl create secret generic --namespace=default globalsecrets --from-literal=AppConfigurationConnectionString=$appConfigurationConnectionString --dry-run -o yaml | kubectl apply -f -
+
+  - job: appInsights
+    displayName: Provision Application Insights
+    dependsOn:
+      - resourceGroup
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Provision Azure Application Insights
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/appinsights.json
+          csmParametersFile: $(armParametersDirectory)/appinsights.json
+          overrideParameters: -appInsightsName $(appInsightsName) -appInsightsLocation ${{parameters.appInsightsLocation}}
+          deploymentMode: Incremental
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(appInsightsPartialName)
+          resourceGroupName: $(resourceGroupName)
+
+  - job: cosmosDb
+    displayName: Provision CosmosDB
+    dependsOn:
+      - resourceGroup
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Provision Azure Cosmos DB
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/cosmosdb.json
+          csmParametersFile: $(armParametersDirectory)/cosmosdb.json
+          overrideParameters: -accountName $(cosmosDbAccountName) -location ${{parameters.locationName}} -primaryRegion ${{parameters.locationName}} -databaseName $(cosmosDbName)
+          deploymentMode: Incremental
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(cosmosDbAccountPartialName)
+          resourceGroupName: $(resourceGroupName)
+
+  - job: populateAppConfiguration
+    displayName: Populate App Configuration
+    dependsOn:
+      - appConfiguration
+      - function1
+      - function2
+      - appInsights
+
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - task: AzureCLI@2
+        displayName: Populate Azure App Configuration
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          addSpnToEnvironment: true
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |-
+            set -Eeuxo pipefail
+            az appconfig kv import --yes --name $(appConfigurationName) --format json --source file --path "$(System.DefaultWorkingDirectory)/pipelines/cd/app-config-template.json" --separator ":"
+            echo "Checking for $(System.DefaultWorkingDirectory)/pipelines/cd/permissions-config/permissions-${{parameters.environmentName}}.json"
+            if [ ! -f $(System.DefaultWorkingDirectory)/pipelines/cd/permissions-config/permissions-${{parameters.environmentName}}.json ];
+            then
+              az appconfig kv import --yes --name $(appConfigurationName) --format json --source file --path "$(System.DefaultWorkingDirectory)/pipelines/cd/permissions-config/permissions-Default.json"
+              echo "Using default permissions file"
+            else
+              az appconfig kv import --yes --name $(appConfigurationName) --format json --source file --path "$(System.DefaultWorkingDirectory)/pipelines/cd/permissions-config/permissions-${{parameters.environmentName}}.json"
+              echo "Using permissions-${{parameters.environmentName}}.json file"
+            fi
+
+            az appconfig kv set --key Global:KeyVault:Name                        --value $(keyVaultName) --name $(appConfigurationName) --yes
+            az appconfig kv set --key Global:ClientAuth:Jwt:AadAppId              --value $servicePrincipalId --name $(appConfigurationName) --yes
+            az appconfig kv set --key Global:AzureActiveDirectory:AppId           --value $servicePrincipalId --name $(appConfigurationName) --yes
+            az appconfig kv set --key Global:AzureActiveDirectory:AppSecret       --value $servicePrincipalKey --name $(appConfigurationName) --yes
+            az appconfig kv set --key Global:ResourceGroup                        --value $(resourceGroupName) --name $(appConfigurationName) --yes
+            az appconfig kv set --key Global:SubscriptionId                       --value ${{parameters.subscriptionId}} --name $(appConfigurationName) --yes
+            az appconfig kv set --key Global:StorageAccount:Name                  --value $(storageAccountName) --name $(appConfigurationName) --yes
+            az appconfig kv set --key Global:CosmosDb:AccountName                 --value $(cosmosDbAccountName) --name $(appConfigurationName) --yes
+            az appconfig kv set --key Global:EventHub:Name                        --value $(eventHubName) --name $(appConfigurationName) --yes
+            az appconfig kv set --key Global:EventHub:RootKey                     --value $(az eventhubs namespace authorization-rule keys list --resource-group $(resourceGroupName) --namespace-name $(eventHubName) --name RootManageSharedAccessKey --query primaryKey --output tsv) --name $(appConfigurationName) --yes
+            az appconfig kv set --key TenantManagerService:EventHubNamespaceName  --value $(eventHubName) --name $(appConfigurationName) --yes
+            az appconfig kv set --key TenantManagerService:AutomationAccountName  --value $(automationName) --name $(appConfigurationName) --yes
+
+            appInsightKey=$(az resource show -g $(resourceGroupName) -n $(appInsightsName) --resource-type "Microsoft.Insights/components" --query properties.InstrumentationKey --output tsv)
+            az appconfig kv set --key Global:InstrumentationKey --value $appInsightKey --name $(appConfigurationName) --yes
+
+            jwtIssuer="https://$(aksName).${{parameters.locationName}}.cloudapp.azure.com/auth"
+            az appconfig kv set --key Global:ClientAuth:Jwt:AuthIssuer --value $jwtIssuer --name $(appConfigurationName) --yes
+
+            appConfig=$(az functionapp list --resource-group $(resourceGroupName) --query "[?contains(name, 'appconfig')]".hostNames --output tsv)
+            appConfigEndpoint="https://$appConfig/api/SetAppConfigKey"
+            az appconfig kv set --key TenantManagerService:SetAppConfigEndpoint --value $appConfigEndpoint --name $(appConfigurationName) --yes
+            az appconfig kv set --key TenantManagerService:SetAppConfigFunction --value $appConfigEndpoint --name $(appConfigurationName) --yes
+
+            deviceTwin=$(az functionapp list --resource-group $(resourceGroupName) --query "[?contains(name, 'devicetwin')]".name --output tsv)
+            deviceTwinFuncUri="https://$deviceTwin.scm.azurewebsites.net"
+            az appconfig kv set --key TenantManagerService:TwinChangeFunctionUri --value $deviceTwinFuncUri --name $(appConfigurationName) --yes
+            az appconfig kv set --key TenantManagerService:TelemetryFunctionUri --value $deviceTwinFuncUri --name $(appConfigurationName) --yes
+            az appconfig kv set --key TenantManagerService:LifecycleFunctionUri --value $deviceTwinFuncUri --name $(appConfigurationName) --yes
+
+  - job: populateKeyVault
+    displayName: Populate Key Vault
+    dependsOn:
+      - keyVault
+      - storageAccount
+      - eventHub
+      - maps
+      - cosmosDb
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: none
+
+      - task: AzureCLI@2
+        displayName: Populate Azure Key Vault
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          addSpnToEnvironment: true
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |-
+            az keyvault secret set --vault-name $(keyVaultName) --name 'Global--ServicePrincipalId' --value $servicePrincipalId
+            az keyvault secret set --vault-name $(keyVaultName) --name 'Global--ServicePrincipalKey' --value $servicePrincipalKey
+
+            blobStorageKey=$(az storage account keys list -g $(resourceGroupName) -n $(storageAccountName) --query "[?contains(keyName, 'key1')]".value --output tsv)
+            blobStorageConnString="DefaultEndpointsProtocol=https;AccountName=$(storageAccountName);AccountKey=$blobStorageKey;EndpointSuffix=core.windows.net"
+            az keyvault secret set --vault-name $(keyVaultName) --name 'Global--StorageAccountConnectionString' --value $blobStorageConnString
+
+            cosmosDBUri=$(az cosmosdb show -g $(resourceGroupName) -n $(cosmosDbAccountName) | jq -r ".documentEndpoint")
+            cosmosDBAuthKey=$(az cosmosdb keys list --resource-group $(resourceGroupName) --name $(cosmosDbAccountName) --query primaryMasterKey --output tsv)
+            cosmosDBConnection="AccountEndpoint=$cosmosDBUri;AccountKey=$cosmosDBAuthKey;"
+            az keyvault secret set --vault-name $(keyVaultName) --name 'Global--CosmosDb--DocumentDbEndpoint' --value $cosmosDBUri
+            az keyvault secret set --vault-name $(keyVaultName) --name 'Global--CosmosDb--DocumentDbAuthKey' --value $cosmosDBAuthKey
+            az keyvault secret set --vault-name $(keyVaultName) --name 'Global--CosmosDb--DocumentDbConnectionString' --value $cosmosDBConnection
+
+            evAccessPolicyKey=$(az eventhubs namespace authorization-rule keys list -n $(defaultSasKeyName) -g $(resourceGroupName) --namespace-name $(eventHubName) --query primaryKey -o tsv)
+            az keyvault secret set --vault-name $(keyVaultName) --name 'TenantManagerService--EventHubAccessPolicyKey' --value $evAccessPolicyKey
+
+            ehQueueAuthRule='iothubroutes'
+            lifecycleEv=$(az eventhubs eventhub list --resource-group $(resourceGroupName) --namespace-name $(eventHubName) --query "[?contains(name, 'lifecycle')]".name --output tsv)
+            lifecycleEvConn=$(az eventhubs eventhub authorization-rule keys list --resource-group $(resourceGroupName) --namespace-name $(eventHubName) --eventhub-name $lifecycleEv --name $ehQueueAuthRule --query primaryConnectionString --output tsv)
+            az keyvault secret set --vault-name $(keyVaultName) --name 'TenantManagerService--LifecycleEventHubConnectionString' --value $lifecycleEvConn
+
+            telemetryEv=$(az eventhubs eventhub list --resource-group $(resourceGroupName) --namespace-name $(eventHubName) --query "[?contains(name, 'telemetry')]".name --output tsv)
+            telemetryEvConn=$(az eventhubs eventhub authorization-rule keys list --resource-group $(resourceGroupName) --namespace-name $(eventHubName) --eventhub-name $telemetryEv --name $ehQueueAuthRule --query primaryConnectionString --output tsv)
+            az keyvault secret set --vault-name $(keyVaultName) --name 'TenantManagerService--TelemetryEventHubConnectionString' --value $telemetryEvConn
+
+            twinchangeEv=$(az eventhubs eventhub list --resource-group $(resourceGroupName) --namespace-name $(eventHubName) --query "[?contains(name, 'twin-change')]".name --output tsv)
+            twinchangeEvConn=$(az eventhubs eventhub authorization-rule keys list --resource-group $(resourceGroupName) --namespace-name $(eventHubName) --eventhub-name $twinchangeEv --name $ehQueueAuthRule --query primaryConnectionString --output tsv)
+            az keyvault secret set --vault-name $(keyVaultName) --name 'TenantManagerService--TwinChangeEventHubConnectionString' --value $twinchangeEvConn
+
+            ehActionsAuthRule='actionroutes'
+            actionsEv=$(az eventhubs eventhub list --resource-group $(resourceGroupName) --namespace-name $(eventHubName) --query "[?contains(name, 'actions-eventhub')]".name --output tsv)
+            actionsEvConn=$(az eventhubs eventhub authorization-rule keys list --resource-group $(resourceGroupName) --namespace-name $(eventHubName) --eventhub-name $actionsEv --name $ehActionsAuthRule --query primaryConnectionString --output tsv)
+            az keyvault secret set --vault-name $(keyVaultName) --name 'AlertingActionsFunction--ActionsEventHubConnectionString' --value $actionsEvConn
+
+            mapskey=$(az maps account keys list --name $(mapsName) --resource-group $(resourceGroupName) --query primaryKey --output tsv)
+            az keyvault secret set --vault-name $(keyVaultName) --name 'ConfigService--AzureMapsKey' --value $mapskey
+
+            key=$(az keyvault secret show --vault-name $(keyVaultName) -n IdentityGatewayService--PrivateKey)
+            if [ -z "$key" ]
+            then
+                  ssh-keygen -b 2048 -t rsa -C "a9my8zz@mmm.com" -f $(System.DefaultWorkingDirectory)/sshkeys -q -N ""
+                  cat sshkeys > identityGatewayKeys.pem
+                  ssh-keygen -f sshkeys.pub -e -m pem >> identityGatewayKeys.pem
+                  ssh-keygen -f sshkeys.pub -e -m pem > identitypub.pem
+                  az keyvault secret set --vault-name $(keyVaultName) --name 'IdentityGatewayService--PrivateKey' --file $(System.DefaultWorkingDirectory)/identityGatewayKeys.pem
+                  az keyvault secret set --vault-name $(keyVaultName) --name 'IdentityGatewayService--PublicKey' --file $(System.DefaultWorkingDirectory)/identitypub.pem
+            else
+                  echo "Identity Key already exists "
+            fi
+
+  - job: function1
+    displayName: Create Device Twin Function
+    dependsOn:
+      - appInsights
+      - storageAccount
+      - populateKeyVault
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Create Device Twin Azure Function
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/functions.json
+          csmParametersFile: $(armParametersDirectory)/functions.json
+          overrideParameters: -functionAppName $(functionApp1Name) -appInsightsLocation ${{parameters.appInsightsLocation}} -appInsightsName $(appInsightsName) -storageAccountName $(storageAccountName) -runtime dotnet -funcVersion ~2
+          deploymentMode: Incremental
+          deploymentName: $(functionApp1PartialName)-$(Build.BuildId)
+          addSpnToEnvironment: true
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(functionApp1PartialName)
+          resourceGroupName: $(resourceGroupName)
+
+      - task: AzureCLI@2
+        displayName: Set app settings for Device Twin Azure Function
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |-
+            devicetwinPropfn=$(functionApp1Name)
+            cosmosDbConn=$(az keyvault secret show --name "Global--CosmosDb--DocumentDbConnectionString" --vault-name $(keyVaultName) | grep value | awk -F '\"' '{print $4}')
+            lifecycleEvConn=$(az keyvault secret show --name "TenantManagerService--LifecycleEventHubConnectionString" --vault-name $(keyVaultName) | grep value | awk -F '\"' '{print $4}')
+            telemetryEvConn=$(az keyvault secret show --name "TenantManagerService--TelemetryEventHubConnectionString" --vault-name $(keyVaultName) | grep value | awk -F '\"' '{print $4}')
+            twinchangeEvConn=$(az keyvault secret show --name "TenantManagerService--TwinChangeEventHubConnectionString" --vault-name $(keyVaultName) | grep value | awk -F '\"' '{print $4}')
+            az functionapp config appsettings set --name $devicetwinPropfn \
+              --settings \
+                "CosmosDbConnectionString"="$cosmosDbConn" \
+                "TelemetryEventHubConnectionString"="$telemetryEvConn" \
+                "LifecycleEventHubConnectionString"="$lifecycleEvConn" \
+                "TwinChangeEventHubConnectionString"="$twinchangeEvConn" \
+                "DevicePropertiesCacheConsumerGroup"="devicepropertiescache" \
+                "DeviceStreamConsumerGroup"="devicestream" \
+                "CosmosDbRus"="400" \
+                "DeviceStreamDatabaseId"="iot" \
+                "DevicePropertiesCacheDatabaseId"="pcs-storage" \
+                "WhiteList"="tags.*,reported.*,reported.Protocol,reported.SupportedMethods,reported.DeviceMethodStatus,reported.FirmwareUpdateStatus" \
+                "BatchThreshold"="12" \
+                "BatchWriteDelay"="85" \
+              --resource-group $(resourceGroupName)
+
+  - job: function2
+    displayName: Create App Config Function
+    dependsOn:
+      - appInsights
+      - storageAccount
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Create App Config Azure Function
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/functions.json
+          csmParametersFile: $(armParametersDirectory)/functions.json
+          overrideParameters: -functionAppName $(functionApp2Name) -appInsightsName $(appInsightsName) -appInsightsLocation ${{parameters.appInsightsLocation}} -storageAccountName $(storageAccountName) -runtime dotnet -funcVersion ~2
+          deploymentMode: Incremental
+          deploymentName: $(functionApp2PartialName)-$(Build.BuildId)
+          addSpnToEnvironment: true
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(functionApp2PartialName)
+          resourceGroupName: $(resourceGroupName)
+
+  - job: function3
+    displayName: Create Alerting Actions Function
+    dependsOn:
+      - appInsights
+      - storageAccount
+      - populateKeyVault
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Create Alerting Actions Azure Function
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/functions.json
+          csmParametersFile: $(armParametersDirectory)/functions.json
+          overrideParameters: -functionAppName ${{parameters.applicationCode}}-alertingactionsfuncapp-${{parameters.environmentCategory}} -appInsightsName $(appInsightsName) -appInsightsLocation ${{parameters.appInsightsLocation}} -storageAccountName $(storageAccountName) -runtime dotnet -funcVersion ~2
+          deploymentMode: Incremental
+          deploymentName: alertingactionsfuncapp-$(Build.BuildId)
+          addSpnToEnvironment: true
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: alertingactionsfuncapp
+          resourceGroupName: $(resourceGroupName)
+
+      - task: AzureCLI@2
+        displayName: Set app settings for Alerting Actions Azure Function
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |-
+            functionName=${{parameters.applicationCode}}-alertingactionsfuncapp-${{parameters.environmentCategory}}
+            actionsEvConn=$(az keyvault secret show --name "AlertingActionsFunction--ActionsEventHubConnectionString" --vault-name $(keyVaultName) --query [value] --output tsv)
+            sendGridApiKey=$(az keyvault secret show --name "IdentityGatewayService--SendGridApiKey" --vault-name $(keyVaultName) --query [value] --output tsv)
+            az functionapp config appsettings set \
+              --name $functionName \
+              --settings \
+                "ActionsEventHubConnectionString"="$actionsEvConn" \
+                "SendGridApiKey"="$sendGridApiKey" \
+                "ActionsEventHubConsumerGroup"="alertingactions" \
+              --resource-group $(resourceGroupName)
+  - job: function4
+    displayName: Create azure iot Deployment Function
+    dependsOn:
+      - appInsights
+      - storageAccount
+      - populateKeyVault
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Create IOT Deployment Azure Function
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/functions.json
+          csmParametersFile: $(armParametersDirectory)/functions.json
+          overrideParameters: -functionAppName $(functionApp4Name) -appInsightsLocation ${{parameters.appInsightsLocation}} -appInsightsName $(appInsightsName) -storageAccountName $(storageAccountName) -runtime dotnet -funcVersion ~2
+          deploymentMode: Incremental
+          deploymentName: $(functionApp4PartialName)-$(Build.BuildId)
+          addSpnToEnvironment: true
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(functionApp4PartialName)
+          resourceGroupName: $(resourceGroupName)
+
+      - task: AzureCLI@2
+        displayName: Set app settings for Deployment Sync function
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |-
+            functionName=$(functionApp4Name)
+            cosmosDbConn=$(az keyvault secret show --name "Global--CosmosDb--DocumentDbConnectionString" --vault-name $(keyVaultName) | grep value | awk -F '\"' '{print $4}')
+            appConfigurationConnectionString=$(az appconfig credential list --name $(appConfigurationName) -g $(resourceGroupName) | jq -r .[0].connectionString)
+            blobStorageKey=$(az storage account keys list -g $(resourceGroupName) -n $(storageAccountName) --query "[?contains(keyName, 'key1')]".value --output tsv)
+            blobStorageConnString="DefaultEndpointsProtocol=https;AccountName=$(storageAccountName);AccountKey=$blobStorageKey;EndpointSuffix=core.windows.net"
+            az functionapp config appsettings set --name $functionName \
+              --settings \
+                "CosmosDbConnectionString"="$cosmosDbConn" \
+                "AppConfigurationConnectionString"="$appConfigurationConnectionString" \
+                "TableStorageConnectionString"="$blobStorageConnString" \
+                "AzureStorageConnectionString"="$blobStorageConnString" \
+                "DeploymentsDatabaseId"="pcs-storage" \
+              --resource-group $(resourceGroupName)
+
+  - job: automationAccount
+    displayName: Provision Azure Automation and Sendgrid accounts
+    dependsOn:
+      - aks
+      - keyVault
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    pool:
+      vmImage: windows-latest
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - template: apply-arm-tags.yaml
+        parameters:
+          environment: ${{parameters.environmentName}}
+
+      - task: AzureResourceGroupDeployment@2
+        displayName: Provision Azure Automation account
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          action: Create Or Update Resource Group
+          resourceGroupName: $(resourceGroupName)
+          location: ${{parameters.locationName}}
+          templateLocation: Linked artifact
+          csmFile: $(armTemplatesDirectory)/automationacct.json
+          csmParametersFile: $(armParametersDirectory)/automationacct.json
+          overrideParameters: -automationAccountName $(automationName) -location ${{parameters.locationName}}
+          deploymentMode: Incremental
+          addSpnToEnvironment: true
+
+      - template: steps-delete-oldest-deployment.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          deploymentPartialName: $(automationPartialName)
+          resourceGroupName: $(resourceGroupName)
+
+      - task: AzurePowerShell@3
+        displayName: Create certificate and connections on Azure Automation Account
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          ScriptType: FilePath
+          ScriptPath: pipelines/cd/automationAcctCert.ps1
+          ScriptArguments: -accountName $(automationName) -resourceGroup $(resourceGroupName) -subscriptionId ${{parameters.subscriptionId}} -tenantId $(tenantId) -keyvaultName $(keyVaultName)
+          azurePowerShellVersion: LatestVersion
+
+      - task: AzurePowerShell@3
+        displayName: Import runbook code and create webhook
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          ScriptType: FilePath
+          ScriptPath: pipelines/cd/automationAcct.ps1
+          ScriptArguments: -accountName $(automationName) -resourceGroup $(resourceGroupName) -scriptFolder $(System.DefaultWorkingDirectory)/src/services/tenant-manager/RunBookCode -keyvaultName $(keyVaultName)
+          azurePowerShellVersion: LatestVersion
+
+      - task: AzurePowerShell@3
+        displayName: Create SendGrid Acct and API Key
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          ScriptType: FilePath
+          ScriptPath: pipelines/cd/sendgridAcct.ps1
+          ScriptArguments: -location ${{parameters.locationName}} -resourceGroup $(resourceGroupName) -resourceName $(sendgridAccountName) -keyvaultName $(keyVaultName) -email ${{parameters.sendgridEmail}}
+          azurePowerShellVersion: LatestVersion
+
+  - job: ingress
+    displayName: Create K8s ingress
+    dependsOn:
+      - aks
+    variables:
+      - template: variables-deploy-infra.yaml
+        parameters:
+          subscriptionName: ${{parameters.subscriptionName}}
+          locationName: ${{parameters.locationName}}
+          environmentName: ${{parameters.environmentName}}
+          subscriptionId: ${{parameters.subscriptionId}}
+          applicationCode: ${{parameters.applicationCode}}
+          applicationShortCode: ${{parameters.applicationShortCode}}
+          environmentCategory: ${{parameters.environmentCategory}}
+    steps:
+      - checkout: self
+        displayName: Checkout repository
+
+      - task: HelmInstaller@1
+        displayName: Install Helm
+        inputs:
+          helmVersionToInstall: $(helmVersion)
+
+      - task: HelmDeploy@0
+        displayName: Initialize Helm
+        inputs:
+          connectionType: Azure Resource Manager
+          azureSubscription: ${{parameters.subscriptionName}}
+          azureResourceGroup: $(resourceGroupName)
+          kubernetesCluster: $(aksName)
+          namespace: default
+          command: init
+          arguments: --force-upgrade
+
+      - task: AzureCLI@2
+        displayName: Install K8s Ingress Controller
+        inputs:
+          azureSubscription: ${{parameters.subscriptionName}}
+          scriptLocation: inlineScript
+          scriptType: bash
+          inlineScript: |-
+            helm version
+            helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+            helm repo update
+            n=0
+            until [ $n -ge 5 ]
+            do
+              az aks get-credentials -n $(aksName) -g $(resourceGroupName)
+              # Use Helm to deploy an NGINX ingress controller
+              helm upgrade ingress-controller stable/nginx-ingress \
+                  --install \
+                  --force \
+                  --namespace ingress-basic \
+                  --set controller.replicaCount=2 \
+                  --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
+                  --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
+                  --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="$(aksName)" \
+                  --wait \
+                2>&1 && break
+              n=$[$n+1]
+              sleep 1m
+            done
+            if [ $n -ge 5 ]
+            then
+              echo "Error Deploying ingress controller" 1>&2
+              exit 64
+            fi
+
+      # - task: AzureCLI@2
+      #   displayName: Add DNS record
+      #   inputs:
+      #     azureSubscription: ${{parameters.subscriptionName}}
+      #     scriptLocation: scriptPath
+      #     scriptType: bash
+      #     scriptPath: charts/ingress/ip.sh
+      #     arguments: $(aksName) $(resourceGroupName)
+
+      - task: Bash@3
+        displayName: Install jetstack Helm repository
+        inputs:
+          targetType: inline
+          script: |-
+            # Add the Jetstack Helm repository
+            helm repo add jetstack https://charts.jetstack.io
+            # Update your local Helm chart repository cache
+            helm repo update
+
+      - task: HelmDeploy@0
+        displayName: Deploy cert-manager
+        inputs:
+          connectionType: Azure Resource Manager
+          azureSubscription: ${{parameters.subscriptionName}}
+          azureResourceGroup: $(resourceGroupName)
+          kubernetesCluster: $(aksName)
+          namespace: cert-manager
+          command: upgrade
+          chartType: Name
+          releaseName: cert-manager
+          chartName: jetstack/cert-manager
+          arguments: --version v$(certManagerVersion) --install --force
+
+      - task: Kubernetes@1
+        displayName: Create Cluster Issuer
+        inputs:
+          connectionType: Azure Resource Manager
+          azureSubscriptionEndpoint: ${{parameters.subscriptionName}}
+          azureResourceGroup: $(resourceGroupName)
+          kubernetesCluster: $(aksName)
+          command: apply
+          useConfigurationFile: true
+          configuration: charts/ingress/cluster-issuer-prod.yaml
+
+      - task: Kubernetes@1
+        displayName: Create Ingress
+        inputs:
+          connectionType: Azure Resource Manager
+          azureSubscriptionEndpoint: ${{parameters.subscriptionName}}
+          azureResourceGroup: $(resourceGroupName)
+          kubernetesCluster: $(aksName)
+          command: apply
+          useConfigurationFile: true
+          configurationType: inline
+          inline: |
+            apiVersion: networking.k8s.io/v1beta1
+            kind: Ingress
+            metadata:
+              name: $(aksName)
+              namespace: default
+              annotations:
+                kubernetes.io/ingress.class: nginx
+                cert-manager.io/cluster-issuer: letsencrypt-prod
+                nginx.ingress.kubernetes.io/rewrite-target: /$1
+                nginx.ingress.kubernetes.io/proxy-body-size: 200m
+            spec:
+              tls:
+              - hosts:
+                - $(aksName).$(locationName).cloudapp.azure.com
+                secretName: tls-prod
+              rules:
+              - host: $(aksName).$(locationName).cloudapp.azure.com
+                http:
+                  paths:
+                  - backend:
+                      serviceName: reverse-proxy
+                      servicePort: 10080
+                    path: /(.*)

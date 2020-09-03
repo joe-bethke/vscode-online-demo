@@ -1,0 +1,12 @@
+steps:
+  - script: |-
+      echo Agent.BuildDirectory: $(Agent.BuildDirectory)
+      echo Agent.HomeDirectory: $(Agent.HomeDirectory)
+      echo Agent.Id: $(Agent.Id)
+      echo Agent.JobStatus: $(Agent.JobStatus)
+      echo Agent.MachineName: $(Agent.MachineName)
+      echo Agent.Name: $(Agent.Name)
+      echo Agent.WorkFolder: $(Agent.WorkFolder)
+      echo Agent.TempDirectory: $(Agent.TempDirectory)
+    displayName: Print Agent variables
+    continueOnError: true

@@ -1,0 +1,48 @@
+parameters:
+  resourceGroupName:
+  subscriptionName:
+  deploymentPartialName:
+  minimumDeploymentsToKeepCount: 10
+
+steps:
+  - script: |-
+      set -Eeuxo pipefail
+      sudo apt-get update && sudo apt-get install --only-upgrade -y azure-cli
+      az --version
+    displayName: Update Azure CLI
+
+  - task: AzureCLI@2
+    displayName: Delete oldest '${{parameters.deploymentPartialName}}' deployment
+    inputs:
+      azureSubscription: ${{parameters.subscriptionName}}
+      scriptLocation: inlineScript
+      scriptType: bash
+      inlineScript: |-
+        set -Eeuxo pipefail
+        if [ -z "${{parameters.resourceGroupName}}" ]; then
+          echo Looking for oldest subscription deployment
+          echo Total number of subscription deployments: $(az deployment sub list --query "length(@)" --output tsv)
+          if (($(az deployment sub list --query "length([?contains(name, '${{parameters.deploymentPartialName}}')])" --output tsv) > ${{parameters.minimumDeploymentsToKeepCount}})); then
+            echo "Deleting oldest subscription deployment with name matching '${{parameters.deploymentPartialName}}'"
+            az deployment sub delete --name $(az deployment sub list --query "sort_by([?contains(name, '${{parameters.deploymentPartialName}}')], &properties.timestamp)[0].name" --output tsv)
+          else
+            echo "Skipping deletion of oldest subscription deployment because there are fewer than ${{parameters.minimumDeploymentsToKeepCount}} that match the name '${{parameters.deploymentPartialName}}'"
+          fi
+
+          echo Total number of subscription deployments: $(az deployment sub list --query "length(@)" --output tsv)
+        else
+          if az group show --name ${{parameters.resourceGroupName}} &> /dev/null; then
+            echo Looking for oldest resource group deployment
+            echo Total number of resource group deployments: $(az deployment group list --resource-group ${{parameters.resourceGroupName}} --query "length(@)" --output tsv)
+            if (($(az deployment group list --resource-group ${{parameters.resourceGroupName}} --query "length([?contains(name, '${{parameters.deploymentPartialName}}')])" --output tsv) > ${{parameters.minimumDeploymentsToKeepCount}})); then
+              echo "Deleting oldest resource group deployment with name matching '${{parameters.deploymentPartialName}}'"
+              az deployment group delete --resource-group ${{parameters.resourceGroupName}} --name $(az deployment group list --resource-group ${{parameters.resourceGroupName}} --query "sort_by([?contains(name, '${{parameters.deploymentPartialName}}')], &properties.timestamp)[0].name" --output tsv)
+            else
+              echo "Skipping deletion of oldest resource group deployment because there are fewer than ${{parameters.minimumDeploymentsToKeepCount}} that match the name '${{parameters.deploymentPartialName}}'"
+            fi
+
+            echo Total number of resource group deployments: $(az deployment group list --resource-group ${{parameters.resourceGroupName}} --query "length(@)" --output tsv)
+          else
+            echo "Skipping deletion of oldest resource group deployment because resource group '${{parameters.resourceGroupName}}' does not exist"
+          fi
+        fi

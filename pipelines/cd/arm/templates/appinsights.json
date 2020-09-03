@@ -1,0 +1,42 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appInsightsLocation": {
+      "minLength": 2,
+      "type": "string"
+    },
+    "appInsightsName": {
+      "minLength": 2,
+      "type": "string"
+    }
+  },
+  "variables": {
+    "location": "[parameters('appInsightsLocation')]",
+    "applicationInsightName": "[parameters('appInsightsName')]"
+  },
+  "resources": [
+
+    {
+      "apiVersion": "2014-04-01",
+      "name": "[variables('applicationInsightName')]",
+      "type": "Microsoft.Insights/components",
+      "location": "[variables('location')]",
+      "tags": {
+        "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', variables('applicationInsightName'))]": "Resource",
+        "displayName": "AppInsightsComponent"
+      },
+      "properties": {
+        "applicationId": "[resourceId('Microsoft.Web/sites', variables('applicationInsightName'))]"
+      }
+    }
+ 
+
+
+  ],
+  "outputs": {
+	  "CloudResourceName" : {"value": "[variables('applicationInsightName')]","type":"string" },
+    "CloudResourceUri" : {"value": "","type":"string" },
+    "CloudResourceType" : {"value": "Application Insights","type":"string" }
+    }
+}

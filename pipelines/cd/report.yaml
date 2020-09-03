@@ -1,0 +1,212 @@
+trigger: none
+pr: none
+pool:
+  vmImage: ubuntu-latest
+resources:
+  repositories:
+    - repository: mmm
+      type: githubenterprise
+      name: MMM/azure-iot-services-dotnet
+      endpoint: GithubMMM
+schedules:
+  - cron: 0 6 * * *
+    displayName: Daily midnight (CST) build
+    branches:
+      include:
+        - master
+    always: true
+stages:
+  - stage: crslDev
+    dependsOn: []
+    displayName: CRSL dev
+    jobs:
+      - job: crslDev
+        displayName: CRSL dev
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.18.2
+              azureServiceConnectionName: 3M-CRSLAD16-BBIoTP-Dev
+              serenityEnvironment: crslDev
+
+  - stage: ggkDev
+    dependsOn: []
+    displayName: GGK dev
+    jobs:
+      - job: ggkDev
+        displayName: GGK dev
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.18.1
+              azureServiceConnectionName: 3M-CRSLAD16-BBIoTP-Dev
+              serenityEnvironment: ggkDev
+
+  - stage: crslQa
+    dependsOn: []
+    displayName: CRSL QA
+    jobs:
+      - job: crslQa
+        displayName: CRSL QA
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.18.1
+              azureServiceConnectionName: 3M-CRSLAD17-BBIoTP-QA
+              serenityEnvironment: crslQa
+
+  - stage: crslWkbnch
+    dependsOn: []
+    displayName: CRSL workbench
+    jobs:
+      - job: crslWkbnch
+        displayName: CRSL workbench
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.18.1
+              azureServiceConnectionName: 3M-CRSLAD19-BBIoTP-Prod
+              serenityEnvironment: crslWkbnch
+
+  - stage: chimDev
+    dependsOn: []
+    displayName: CHIM dev
+    jobs:
+      - job: chimDev
+        displayName: CHIM dev
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.16.8
+              azureServiceConnectionName: 3M-ACTAIR01-CHIMSMART-Dev
+              serenityEnvironment: chimDev
+
+  - stage: chimQa
+    dependsOn: []
+    displayName: CHIM QA
+    jobs:
+      - job: chimQa
+        displayName: CHIM QA
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.16.8
+              azureServiceConnectionName: 3M-ACTAIR02-CHIMSMART-QA
+              serenityEnvironment: chimQa
+
+  - stage: chimProd
+    dependsOn: []
+    displayName: CHIM prod
+    jobs:
+      - job: chimProd
+        displayName: CHIM prod
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.16.8
+              azureServiceConnectionName: 3M-ACTAIR04-CHIMSMART-Prod
+              serenityEnvironment: chimProd
+
+  - stage: psdDev
+    dependsOn: []
+    displayName: PSD dev
+    jobs:
+      - job: psdDev
+        displayName: PSD dev
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.16.8
+              azureServiceConnectionName: 3M-ASDT04-PSD-CS-IOT-Dev
+              serenityEnvironment: psdDev
+
+  - stage: psdEu
+    dependsOn: []
+    displayName: PSD EU
+    jobs:
+      - job: psdEu
+        displayName: PSD EU
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.16.8
+              azureServiceConnectionName: 3M-ASDT07-PSD-CS-IOT-Prod
+              serenityEnvironment: psdEu
+
+  - stage: psdQa
+    dependsOn: []
+    displayName: PSD QA
+    jobs:
+      - job: psdQa
+        displayName: PSD QA
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.16.8
+              azureServiceConnectionName: 3M-ASDT05-PSD-CS-IOT-QA
+              serenityEnvironment: psdQa
+
+  - stage: psdStg
+    dependsOn: []
+    displayName: PSD staging
+    jobs:
+      - job: psdStg
+        displayName: PSD staging
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.16.8
+              azureServiceConnectionName: 3M-ASDT05-PSD-CS-IOT-QA
+              serenityEnvironment: psdStg
+
+  - stage: psdProd
+    dependsOn: []
+    displayName: PSD Prod
+    jobs:
+      - job: psdProd
+        displayName: PSD Prod
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.16.8
+              azureServiceConnectionName: 3M-ASDT07-PSD-CS-IOT-Prod
+              serenityEnvironment: psdProd
+
+  - stage: emdDev
+    dependsOn: []
+    displayName: EMD dev
+    jobs:
+      - job: emdDev
+        displayName: EMD dev
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.16.8
+              azureServiceConnectionName: 3M-UDAH02-SpartanIotHub-Dev
+              serenityEnvironment: emdDev
+
+  - stage: emdQa
+    dependsOn: []
+    displayName: EMD QA
+    jobs:
+      - job: emdQa
+        displayName: EMD QA
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.16.8
+              azureServiceConnectionName: 3M-UDAH03-SpartanIotHub-QA
+              serenityEnvironment: emdQa
+
+  - stage: emdCt
+    dependsOn: []
+    displayName: EMD CT
+    jobs:
+      - job: emdCt
+        displayName: EMD CT
+        steps:
+          - template: ../templates/steps-report-versions.yaml
+            parameters:
+              kubernetesVersion: 1.16.8
+              azureServiceConnectionName: 3M-UDAH04-SpartanIotHub-CT
+              serenityEnvironment: emdCt

@@ -1,0 +1,9 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "resourceName": { "value": "crslkeyvaultdev" },
+      "userObjId": { "value": "562b0a82-a156-4a88-987d-5c8eb71c2b9b" },
+      "applicationObjId": { "value": "562b0a82-a156-4a88-987d-5c8eb71c2b9b" }
+    }
+  }

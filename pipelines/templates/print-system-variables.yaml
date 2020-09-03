@@ -1,0 +1,16 @@
+steps:
+  - script: |-
+      echo System.AccessToken: $(System.AccessToken)
+      echo System.CollectionId: $(System.CollectionId)
+      echo System.DefaultWorkingDirectory: $(System.DefaultWorkingDirectory)
+      echo System.DefinitionId: $(System.DefinitionId)
+      echo System.HostType: $(System.HostType)
+      echo System.PullRequest.PullRequestId: $(System.PullRequest.PullRequestId)
+      echo System.PullRequest.SourceBranch: $(System.PullRequest.SourceBranch)
+      echo System.PullRequest.SourceRepositoryURI: $(System.PullRequest.SourceRepositoryURI)
+      echo System.PullRequest.TargetBranch: $(System.PullRequest.TargetBranch)
+      echo System.TeamFoundationCollectionUri: $(System.TeamFoundationCollectionUri)
+      echo System.TeamProject: $(System.TeamProject)
+      echo System.TeamProjectId: $(System.TeamProjectId)
+    displayName: Print System variables
+    continueOnError: true

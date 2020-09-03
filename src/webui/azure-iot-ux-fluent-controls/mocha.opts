@@ -1,0 +1,7 @@
+--require ts-node/register
+--require source-map-support/register
+--require ignore-styles
+--recursive
+--exclude ./src/**/*.js
+--file ./test/browser.js
+./lib/**/*.spec.tsx

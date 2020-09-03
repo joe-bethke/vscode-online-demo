@@ -1,0 +1,66 @@
+/// <reference types="@types/react" />
+import * as React from 'react';
+import { OptionAttr } from '../../Attributes';
+import { MethodNode, FormOption } from '../../Common';
+import { RadioInputAttributes } from '../Input/RadioInput';
+import { FormFieldAttributes } from './FormField';
+export interface RadioFieldType {
+}
+export interface RadioFieldProps extends React.Props<RadioFieldType> {
+    /** HTML form element name */
+    name: string;
+    /**
+     * Current value of HTML radio button element
+     *
+     * This must be an `Object` that is in `RadioFieldProps.options`
+     */
+    value: any;
+    /**
+     * List of HTML radio button element options in the format:
+     *
+     * `{
+     *     label: string,
+     *     value: any
+     * }`
+     */
+    options: (FormOption & OptionAttr<RadioInputAttributes>)[];
+    /** Label to display above input element */
+    label: MethodNode;
+    /** Error to display below input element */
+    error?: MethodNode;
+    /** Error HTML title in case of overflow */
+    errorTitle?: string;
+    /** Allow radio buttons to show up in columns */
+    columns?: boolean;
+    /** Disable HTML input element */
+    disabled?: boolean;
+    /** Form field is required (appends a red asterisk to the label) */
+    required?: boolean;
+    /** Display horizontal loading animation instead of error */
+    loading?: boolean;
+    /** Autofocus */
+    autoFocus?: boolean;
+    /** Tooltip text to display in info icon bubble */
+    tooltip?: MethodNode;
+    /** Callback for HTML radio button element `onChange` events */
+    onChange: (newValue: any) => void;
+    /** Classname to append to top level element */
+    className?: string;
+    /** Classname to append to top level element of RadioInput */
+    inputClassName?: string;
+    /** React node to render at the far side of the label. */
+    labelFarSide?: React.ReactNode;
+    attr?: RadioInputAttributes & FormFieldAttributes;
+}
+/**
+ * High level form select box control
+ *
+ * IMPORTANT: The options provided to this control must all be UNIQUE. The
+ * `value` property of radio buttons is the numerical index of the option in
+ * `RadioField.options` so `RadioField.value` is compared to each value in
+ * `options` (===) to decide which option is the one currently selected.
+ *
+ * @param props: Object fulfilling `RadioFieldProps` interface
+ */
+export declare const RadioField: React.StatelessComponent<RadioFieldProps>;
+export default RadioField;

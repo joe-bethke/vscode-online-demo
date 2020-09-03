@@ -1,0 +1,56 @@
+kind: helm-release
+apiVersion: 1.1
+build:
+  context: ../../../../
+  dockerfile: ../../Dockerfile
+install:
+  chart: azds
+  values:
+    - values.dev.yaml?
+    - secrets.dev.yaml?
+  set:
+    nameOverride: identity-gateway
+    deployment:
+      replicaCount: 1
+      probes:
+        enabled: false
+      image:
+        tag: $(tag)
+        pullPolicy: IfNotPresent
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: traefik-azds
+      hosts:
+        - $(spacePrefix)$(rootSpacePrefix)identity-gateway$(hostSuffix)
+      path: /
+      tls: []
+configurations:
+  develop:
+    build:
+      dockerfile: ../../Dockerfile
+      useGitIgnore: true
+      args:
+        SERVICE_NAME: ${SERVICE_NAME:-identity-gateway}
+        WEB_SERVICE_ASSEMBLY_NAME: ${WEB_SERVICE_ASSEMBLY_NAME:-Mmm.Iot.IdentityGateway.WebService.dll}
+        APP_CONFIGURATION_CONNECTION_STRING: ${secret.globalsecrets.AppConfigurationConnectionString}
+    container:
+      sync:
+        - "**/*"
+      command: [
+        dotnet,
+        bin/Debug/netcoreapp3.1/Mmm.Iot.IdentityGateway.WebService.dll,
+      ]
+      iterate:
+        processesToKill: [
+          dotnet,
+          vsdbg,
+          Mmm.Iot.IdentityGateway.WebService
+        ]
+        buildCommands:
+          - [
+              dotnet,
+              build,
+              --configuration,
+              Debug
+            ]

@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <AssemblyName>Mmm.Iot.Config.Services</AssemblyName>
+        <RootNamespace>$(AssemblyName)</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="Content\DefaultLogo.svg" />
+        <None Remove="Data\default.json" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="Content\DefaultLogo.svg">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Data\default.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Azure.Devices" Version="1.27.0-preview-004" />
+        <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\common\Services\Services.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="Data\device-simulation-template.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+</Project>

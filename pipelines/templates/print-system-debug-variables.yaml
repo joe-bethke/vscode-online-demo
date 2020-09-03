@@ -1,0 +1,5 @@
+steps:
+  - script: |-
+      echo System.Debug: $(System.Debug)
+    displayName: Print System.Debug variables
+    continueOnError: true

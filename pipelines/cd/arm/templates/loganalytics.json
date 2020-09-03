@@ -1,0 +1,85 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "omsWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "OMS log analytics workspace name"
+            }
+        },
+        "omsServiceTier": {
+            "type": "string",
+            "defaultValue": "Free",
+            "allowedValues": [
+                "Free",
+                "Standalone",
+                "PerNode"
+            ],
+            "metadata": {
+                "description": "OMS log analytics service tier: Free, Standalone, or PerNode"
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "The location of oms resource."
+            }
+        },
+        "omsDataRetention": {
+            "type": "int",
+            "defaultValue": 7,
+            "minValue": 7,
+            "maxValue": 730,
+            "metadata": {
+                "description": "OMS log analytics number of days of retention. Free plans can only have 7 days, Standalone and OMS plans include 30 days for free"
+            }
+        }
+    },
+    "variables": {
+        "apiVersion": {
+            "oms": "2017-03-15-preview",
+            "omssolutions": "2015-11-01-preview",
+            "automation": "2015-10-31"
+        },
+        "updates": {
+            "name": "[concat('Updates', '(', parameters('omsWorkspaceName'), ')')]",
+            "galleryName": "Updates"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "[variables('apiVersion').oms]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "name": "[parameters('omsWorkspaceName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "Name": "[parameters('omsServiceTier')]"
+                },
+                "retention": "[parameters('omsDataRetention')]"
+            },
+            "resources": [
+                {
+                    "apiVersion": "[variables('apiVersion').omssolutions]",
+                    "location": "[resourceGroup().location]",
+                    "name": "[variables('updates').name]",
+                    "type": "Microsoft.OperationsManagement/solutions",
+                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.OperationsManagement/solutions/', variables('updates').name)]",
+                    "dependsOn": [
+                        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspaceName'))]"
+                    ],
+                    "properties": {
+                        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspaceName'))]"
+                    },
+                    "plan": {
+                        "name": "[variables('updates').name]",
+                        "publisher": "Microsoft",
+                        "promotionCode": "",
+                        "product": "[concat('OMSGallery/', variables('updates').galleryName)]"
+                    }
+                }
+            ]
+        }
+    ]
+}

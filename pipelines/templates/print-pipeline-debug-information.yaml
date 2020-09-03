@@ -1,0 +1,15 @@
+jobs:
+  - job: printPipelineDebugInformation
+    displayName: Print pipeline debug information
+    steps:
+      - template: templates/steps/printWorkingDirectory.yaml
+
+      - template: templates/steps/listAgentBuildDirectoryContents.yaml
+
+      - template: templates/steps/printAgentVariables.yaml
+
+      - template: templates/steps/printBuildVariables.yaml
+
+      - template: templates/steps/printCommonVariables.yaml
+
+      - template: templates/steps/printSystemVariables.yaml

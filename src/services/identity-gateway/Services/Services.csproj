@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <AssemblyName>Mmm.Iot.IdentityGateway.Services</AssemblyName>
+        <RootNamespace>$(AssemblyName)</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Portable.BouncyCastle" Version="1.8.5" />
+        <PackageReference Include="Mustachio" Version="2.1.0" />
+        <PackageReference Include="IdentityServer4" Version="3.1.2" />
+        <PackageReference Include="Sendgrid" Version="9.12.0" />
+        <EmbeddedResource Include="files/InviteEmail.html" />
+
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\common\Services\Services.csproj" />
+    </ItemGroup>
+</Project>
