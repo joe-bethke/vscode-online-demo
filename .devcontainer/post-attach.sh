@@ -1,3 +1,4 @@
+echo hello
 az login
 az aks get-credentials --name $AzureAksName --resource-group $AzureResourceGroupName
 azds space select --name $(az account show --query "user.name" --output tsv | sed "s/\@.*//")
